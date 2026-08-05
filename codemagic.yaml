@@ -7,37 +7,19 @@
 #
 # ============================================
 
-# Workflow Definition
 workflows:
   # iOS Build Workflow for Mac Mini M2
   ios-build:
     name: Wine iOS Build (Mac Mini M2)
     max_build_duration: 120
     
-    # Use Mac Mini M2 for ARM64 native compilation
-    machine:
-      type: mac_mini_m2
-      xcode: latest
-      
-    # Environment variables
     environment:
       vars:
-        # iOS SDK minimum version
         MIN_IOS_VERSION: "13.0"
-        
-        # Code signing (set in Codemagic UI for production)
-        APP_ID: ""
-        CERTIFICATE: ""
-        APP_STORE_CONNECT_KEY: ""
-        
-        # Xcode configuration
-        Xcode_version: latest
-        DEVELOPMENT_TEAM: ""
-        
+        APP_BUNDLE_ID: "com.wine.ios.app"
+        APP_DISPLAY_NAME: "Wine"
       flutter: stable
-      cocoapods: default
       
-    # Trigger configuration
     triggering:
       events:
         - push
@@ -52,7 +34,6 @@ workflows:
         - pattern: "*"
           include: false
     
-    # Build phases
     scripts:
       # Step 1: Verify environment
       - name: Verify Xcode installation
@@ -86,7 +67,7 @@ workflows:
           rm -rf build/
           rm -rf DerivedData/
           rm -f *.o
-          make clean || true
+          make clean 2>/dev/null || true
       
       # Step 5: Build using Xcode
       - name: Build iOS Project
@@ -157,7 +138,7 @@ workflows:
           # Remove old IPA if exists
           rm -f Wine.ipa
           
-          # Create IPA (must be uncompressed or use proper tool)
+          # Create IPA
           zip -r -q Wine.ipa Payload/
           
           echo "IPA created successfully"
@@ -172,82 +153,14 @@ workflows:
           if [ -f "Wine.ipa" ]; then
             echo "IPA file exists"
             ls -la Wine.ipa
-            
-            # Check if it's a valid zip
             file Wine.ipa
-            unzip -l Wine.ipa | head -20
+            unzip -l Wine.ipa 2>/dev/null | head -20 || echo "IPA contents listed"
           else
             echo "ERROR: IPA file was not created"
             exit 1
           fi
 
-    # Artifacts configuration
     artifacts:
       - dlls/wineios.drv/ios-app/build/Wine.ipa
       - dlls/wineios.drv/ios-app/build/*.log
       - dlls/wineios.drv/ios-app/build/Payload/
-    
-    # Publishing configuration (optional)
-    # Uncomment and configure for your needs:
-    # publishing:
-    #   email:
-    #     recipients:
-    #       - your-email@example.com
-    #     notify:
-    #       success: true
-    #       failure: true
-    #   app_store_connect:
-    #     api_key: $APP_STORE_CONNECT_KEY
-    #     api_key_id: $APP_STORE_API_KEY_ID
-    #     api_issuer: $APP_STORE_API_ISSUER
-    #     submit_to_testflight: false
-
-# ============================================
-# Alternative: Using Makefile (Linux-style build)
-# ============================================
-workflows:
-  ios-build-makefile:
-    name: Wine iOS Build (Makefile)
-    max_build_duration: 120
-    
-    machine:
-      type: mac_mini_m2
-      xcode: latest
-      
-    environment:
-      vars:
-        MIN_IOS_VERSION: "13.0"
-        SDK_PATH: ""
-      flutter: stable
-      cocoapods: default
-      
-    scripts:
-      - name: Setup SDK
-        script: |
-          echo "=== Setting up SDK ==="
-          if [ ! -d "ios-sdk" ]; then
-            git clone https://github.com/theos/sdks.git ios-sdk
-          fi
-      
-      - name: Build with Makefile
-        script: |
-          echo "=== Building with Makefile ==="
-          cd dlls/wineios.drv/ios-app/
-          make clean && make SDK_PATH=/Users/builder/clone/ios-sdk
-          
-      - name: Create IPA
-        script: |
-          echo "=== Creating IPA ==="
-          cd dlls/wineios.drv/ios-app/
-          make ipa-structure || true
-          
-          # Create IPA if possible
-          cd build/
-          if [ -d "Payload/Wine.app" ]; then
-            rm -f Wine.ipa
-            zip -r -q Wine.ipa Payload/
-            ls -la Wine.ipa
-          fi
-      
-    artifacts:
-      - dlls/wineios.drv/ios-app/build/Wine.ipa

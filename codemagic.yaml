@@ -40,7 +40,8 @@ workflows:
       - name: Setup build directory
         script: |
           echo "=== Setup ==="
-          cd dlls/wineios.drv/ios-app/
+          PROJECT_DIR="/Users/builder/clone/dlls/wineios.drv/ios-app"
+          cd "$PROJECT_DIR"
           pwd
           ls -la
       
@@ -48,7 +49,8 @@ workflows:
       - name: Clean build
         script: |
           echo "=== Clean ==="
-          cd dlls/wineios.drv/ios-app/
+          PROJECT_DIR="/Users/builder/clone/dlls/wineios.drv/ios-app"
+          cd "$PROJECT_DIR"
           rm -rf build
           rm -rf ~/Library/Developer/Xcode/DerivedData/Wine-*
       
@@ -56,10 +58,15 @@ workflows:
       - name: Build iOS Project
         script: |
           echo "=== Building ==="
-          cd dlls/wineios.drv/ios-app/
+          
+          # Get the full path to the project
+          PROJECT_DIR="/Users/builder/clone/dlls/wineios.drv/ios-app"
+          echo "Project directory: $PROJECT_DIR"
+          ls -la "$PROJECT_DIR/"
           
           # Build - this creates the actual .app bundle with executable
-          xcodebuild -project project.pbxproj \
+          cd "$PROJECT_DIR"
+          xcodebuild -project "$PROJECT_DIR/project.pbxproj" \
             -scheme Wine \
             -configuration Debug \
             -destination 'generic/platform=iOS' \
@@ -84,6 +91,8 @@ workflows:
       - name: Find built app
         script: |
           echo "=== Finding App ==="
+          
+          PROJECT_DIR="/Users/builder/clone/dlls/wineios.drv/ios-app"
           
           # Search in DerivedData
           APP_DIR=$(find ~/Library/Developer/Xcode/DerivedData -name "Wine.app" -type d 2>/dev/null | head -1)
@@ -110,7 +119,9 @@ workflows:
       - name: Prepare IPA
         script: |
           echo "=== Preparing IPA ==="
-          cd dlls/wineios.drv/ios-app/
+          
+          PROJECT_DIR="/Users/builder/clone/dlls/wineios.drv/ios-app"
+          cd "$PROJECT_DIR"
           
           mkdir -p build/Payload
           rm -rf build/Payload/Wine.app
@@ -126,7 +137,9 @@ workflows:
       - name: Create IPA package
         script: |
           echo "=== Creating IPA ==="
-          cd dlls/wineios.drv/ios-app/build/
+          
+          PROJECT_DIR="/Users/builder/clone/dlls/wineios.drv/ios-app"
+          cd "$PROJECT_DIR/build"
           
           rm -f Wine.ipa
           

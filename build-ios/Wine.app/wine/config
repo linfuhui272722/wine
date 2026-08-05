@@ -1,0 +1,29 @@
+[wine]
+Version=7.0
+#WINE=wine
+
+[Drive A]
+"Floppy"="fd0"
+Type=floopy
+
+[Drive C]
+"Hard Disk"="${C:}"
+Type=hd
+
+[Drive D]
+"CD-ROM"="${D:}"
+Type=cdrom
+
+[Drive E]
+"Documents"="${HOME}/Documents"
+Type=network
+
+[wineboot]
+HardwareAcceleration=disabled
+
+[winemac]
+UseOpenGLES=1
+WINEIOS_DEVICE=iPhone
+WINEIOS_SCREEN_SCALE=2.0
+WINEIOS_KEYBOARD=1
+WINEIOS_MOUSE=1

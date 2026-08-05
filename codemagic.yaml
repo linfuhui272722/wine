@@ -17,46 +17,54 @@ workflows:
         - pattern: main
           include: true
     scripts:
-      - name: Setup
+      - name: Clean everything
         script: |
           set -e
           cd $APP_DIR
           rm -rf dlls/wineios.drv/ios-app/build
+          rm -rf dlls/wineios.drv/wineios/*.o
+          rm -rf dlls/wineios.drv/wineios/libwineios.a
+          rm -rf ~/Library/Developer/Xcode/DerivedData/Wine-*
           mkdir -p dlls/wineios.drv/ios-app/build/objects
-          mkdir -p dlls/wineios.drv/ios-app/build/Wine.app
-      - name: Compile wineios
+      - name: Compile wineios on macOS
         script: |
           set -e
           cd $APP_DIR
           SDK=$(xcrun --sdk iphoneos --show-sdk-path)
-          for src in dlls/wineios.drv/wineios/*.c; do
-            NAME=$(basename "$src" .c)
-            clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fPIC -c "$src" -o "dlls/wineios.drv/ios-app/build/objects/${NAME}.o" 2>/dev/null || true
-          done
-          ar rcs dlls/wineios.drv/ios-app/build/libwineios.a dlls/wineios.drv/ios-app/build/objects/*.o
+          echo "Compiling wineios sources..."
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fPIC -Idlls/wineios.drv/wineios -c dlls/wineios.drv/wineios/wineios.c -o dlls/wineios.drv/wineios/wineios.o
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fPIC -Idlls/wineios.drv/wineios -c dlls/wineios.drv/wineios/ios_syscalls.c -o dlls/wineios.drv/wineios/ios_syscalls.o
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fPIC -Idlls/wineios.drv/wineios -c dlls/wineios.drv/wineios/ios_graphics.c -o dlls/wineios.drv/wineios/ios_graphics.o
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fPIC -Idlls/wineios.drv/wineios -c dlls/wineios.drv/wineios/ios_pe.c -o dlls/wineios.drv/wineios/ios_pe.o
+          ar rcs dlls/wineios.drv/wineios/libwineios.a dlls/wineios.drv/wineios/*.o
+          ls -la dlls/wineios.drv/wineios/*.o dlls/wineios.drv/wineios/*.a
       - name: Compile app
         script: |
           set -e
           cd $APP_DIR
           SDK=$(xcrun --sdk iphoneos --show-sdk-path)
-          for src in dlls/wineios.drv/ios-app/*.m; do
-            NAME=$(basename "$src" .m)
-            clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fobjc-arc -c "$src" -o "dlls/wineios.drv/ios-app/build/objects/${NAME}.o" 2>/dev/null || true
-          done
-          ar rcs dlls/wineios.drv/ios-app/build/libwineapp.a dlls/wineios.drv/ios-app/build/objects/*.o
+          echo "Compiling app sources..."
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fobjc-arc -Idlls/wineios.drv/ios-app -Idlls/wineios.drv/wineios -c dlls/wineios.drv/ios-app/main.m -o dlls/wineios.drv/ios-app/build/objects/main.o
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fobjc-arc -Idlls/wineios.drv/ios-app -Idlls/wineios.drv/wineios -c dlls/wineios.drv/ios-app/WineAppDelegate.m -o dlls/wineios.drv/ios-app/build/objects/WineAppDelegate.o
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fobjc-arc -Idlls/wineios.drv/ios-app -Idlls/wineios.drv/wineios -c dlls/wineios.drv/ios-app/WineViewController.m -o dlls/wineios.drv/ios-app/build/objects/WineViewController.o
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fobjc-arc -Idlls/wineios.drv/ios-app -Idlls/wineios.drv/wineios -c dlls/wineios.drv/ios-app/WineEventQueue.m -o dlls/wineios.drv/ios-app/build/objects/WineEventQueue.o
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fobjc-arc -Idlls/wineios.drv/ios-app -Idlls/wineios.drv/wineios -c dlls/wineios.drv/ios-app/WineBridge.m -o dlls/wineios.drv/ios-app/build/objects/WineBridge.o
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fobjc-arc -Idlls/wineios.drv/ios-app -Idlls/wineios.drv/wineios -c dlls/wineios.drv/ios-app/WineJIT.m -o dlls/wineios.drv/ios-app/build/objects/WineJIT.o
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fobjc-arc -Idlls/wineios.drv/ios-app -Idlls/wineios.drv/wineios -c dlls/wineios.drv/ios-app/WineMenuViewController.m -o dlls/wineios.drv/ios-app/build/objects/WineMenuViewController.o
+          ls -la dlls/wineios.drv/ios-app/build/objects/
       - name: Link
         script: |
           set -e
           cd $APP_DIR
           SDK=$(xcrun --sdk iphoneos --show-sdk-path)
-          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fobjc-arc -fobjc-link-runtime -ObjC -lc++ -lz -o dlls/wineios.drv/ios-app/build/Wine.app/Wine dlls/wineios.drv/ios-app/build/objects/*.o -Ldlls/wineios.drv/ios-app/build -lwineios 2>&1 | head -20
-          ls -la dlls/wineios.drv/ios-app/build/Wine.app/Wine 2>/dev/null || echo "Link may have failed"
+          mkdir -p dlls/wineios.drv/ios-app/build/Wine.app
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION             -fobjc-arc -fobjc-link-runtime -ObjC -lc++ -lz             -o dlls/wineios.drv/ios-app/build/Wine.app/Wine             dlls/wineios.drv/ios-app/build/objects/*.o             dlls/wineios.drv/wineios/*.o
+          ls -la dlls/wineios.drv/ios-app/build/Wine.app/Wine
       - name: Create IPA
         script: |
           set -e
           cd $APP_DIR/dlls/wineios.drv/ios-app/build
           mkdir -p Payload/Wine.app/wine/drive_c
-          cp Wine.app/Wine Payload/Wine.app/
           printf "[wine]\nVersion=8.0\n" > Payload/Wine.app/wine/config
           printf "APPL????" > Payload/Wine.app/PkgInfo
           echo '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>CFBundleExecutable</key><string>Wine</string><key>CFBundleIdentifier</key><string>com.wine.ios.app</string><key>CFBundleName</key><string>Wine</string><key>CFBundleDisplayName</key><string>Wine iOS</string><key>CFBundleShortVersionString</key><string>8.0</string><key>CFBundleVersion</key><string>1</string><key>MinimumOSVersion</key><string>13.0</string></dict></plist>' > Payload/Wine.app/Info.plist

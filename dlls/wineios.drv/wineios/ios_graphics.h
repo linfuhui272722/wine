@@ -102,7 +102,10 @@ typedef struct {
 
 typedef uint32_t COLORREF;
 typedef uint32_t DWORD;
+/* BOOL is defined by objc/objc.h when compiling ObjC */
+#ifndef __OBJC__
 typedef int BOOL;
+#endif
 typedef int INT;
 typedef unsigned int UINT;
 typedef float FLOAT;

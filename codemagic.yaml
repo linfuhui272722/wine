@@ -63,10 +63,12 @@ workflows:
           PROJECT_DIR="/Users/builder/clone/dlls/wineios.drv/ios-app"
           echo "Project directory: $PROJECT_DIR"
           ls -la "$PROJECT_DIR/"
+          ls -la "$PROJECT_DIR/Wine.xcodeproj/"
           
           # Build - this creates the actual .app bundle with executable
+          # IMPORTANT: Use .xcodeproj directory, not .pbxproj file
           cd "$PROJECT_DIR"
-          xcodebuild -project "$PROJECT_DIR/project.pbxproj" \
+          xcodebuild -project "$PROJECT_DIR/Wine.xcodeproj" \
             -scheme Wine \
             -configuration Debug \
             -destination 'generic/platform=iOS' \

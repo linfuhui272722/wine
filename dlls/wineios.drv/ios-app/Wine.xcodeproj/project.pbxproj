@@ -346,6 +346,6 @@ D780CCF11A6840C4BB8AA5FC /* Release */ = {
 		defaultConfigurationName = Release;
 	};
 /* End XCConfigurationList section */
-};
+	};
 	rootObject = BC24407A5BE44E2A9A52E055 /* Project object */;
 }

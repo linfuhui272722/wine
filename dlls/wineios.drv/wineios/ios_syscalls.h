@@ -12,10 +12,17 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <sys/stat.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <sys/time.h>
+#include <semaphore.h>
+#include <stdlib.h>
 
 /* iOS-specific definitions */
 #define IOS_JAILBROKEN    (getenv("JAILBREAK") != NULL)

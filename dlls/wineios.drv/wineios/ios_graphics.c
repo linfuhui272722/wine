@@ -5,6 +5,8 @@
  *
  * Implements GDI/GDI+ functions using Apple's Metal framework.
  * This allows Wine to render Windows graphics on iOS devices.
+ *
+ * Note: Metal functions are stubs in C - actual implementation in ObjC
  */
 
 #include "ios_graphics.h"
@@ -14,13 +16,7 @@
 #include <string.h>
 #include <math.h>
 #include <dispatch/dispatch.h>
-
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
-#if HAVE_METAL
-#include <Metal/Metal.h>
-#include <MetalKit/MetalKit.h>
-#endif
+#include <pthread.h>
 
 #define TRACE_GRAPHICS 0
 
@@ -33,11 +29,9 @@
 #define WARN(fmt, ...) fprintf(stderr, "[ios-graphics:warn] " fmt "\n", ##__VA_ARGS__)
 #define ERR(fmt, ...) fprintf(stderr, "[ios-graphics:err] " fmt "\n", ##__VA_ARGS__)
 
-/* Global Metal resources */
-#if HAVE_METAL
-static id<MTLDevice> g_metal_device = nil;
-static id<MTLCommandQueue> g_metal_queue = nil;
-#endif
+/* Global Metal resources (opaque pointers) */
+static IOS_MTL_Device g_metal_device = NULL;
+static IOS_MTL_CommandQueue g_metal_queue = NULL;
 
 /* Surface cache */
 #define MAX_SURFACES 256
@@ -101,6 +95,8 @@ WINE_SURFACE *ios_surface_create(int width, int height, int bpp, const void *dat
     surface->data = calloc(1, size);
     surface->dirty = false;
     surface->refcount = 1;
+    surface->texture = NULL;
+    surface->buffer = NULL;
     
     if (!surface->data) {
         ERR("Failed to allocate surface data");
@@ -111,22 +107,6 @@ WINE_SURFACE *ios_surface_create(int width, int height, int bpp, const void *dat
     if (data) {
         memcpy(surface->data, data, min_int(size, stride * height));
     }
-    
-#if HAVE_METAL
-    /* Create Metal texture if Metal is available */
-    if (g_metal_device) {
-        MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:
-                                       MTLPixelFormatBGRA8Unorm width:width height:height mipmapped:NO];
-        desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
-        surface->texture = [g_metal_device newTextureWithDescriptor:desc];
-        
-        if (surface->texture) {
-            /* Copy data to texture */
-            MTLRegion region = MTLRegionMake2D(0, 0, width, height);
-            [surface->texture replaceRegion:region mipmapLevel:0 withBytes:surface->data bytesPerRow:stride];
-        }
-    }
-#endif
     
     /* Add to cache */
     pthread_mutex_lock(&g_surface_mutex);
@@ -152,38 +132,10 @@ WINE_SURFACE *ios_surface_create_dib(int width, int height, int bpp, void **bits
     return surface;
 }
 
-WINE_SURFACE *ios_surface_create_from_cgimage(CGImageRef image)
+WINE_SURFACE *ios_surface_create_from_image(int width, int height, const void *data)
 {
-    if (!image) return NULL;
-    
-    size_t width = CGImageGetWidth(image);
-    size_t height = CGImageGetHeight(image);
-    
-    WINE_SURFACE *surface = ios_surface_create(width, height, 32, NULL);
-    if (!surface) return NULL;
-    
-    /* Create a context to draw the image into the surface */
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGContextRef context = CGBitmapContextCreate(
-        surface->data, width, height, 8, surface->stride,
-        colorSpace, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little
-    );
-    
-    if (context) {
-        /* Flip the context for correct orientation */
-        CGContextTranslateCTM(context, 0, height);
-        CGContextScaleCTM(context, 1.0, -1.0);
-        
-        /* Draw the image */
-        CGContextDrawImage(context, CGRectMake(0, 0, width, height), image);
-        CGContextRelease(context);
-        
-        surface->dirty = true;
-    }
-    
-    CGColorSpaceRelease(colorSpace);
-    
-    return surface;
+    TRACE("ios_surface_create_from_image(%d, %d, %p)", width, height, data);
+    return ios_surface_create(width, height, 32, data);
 }
 
 void ios_surface_destroy(WINE_SURFACE *surface)
@@ -210,14 +162,10 @@ void ios_surface_destroy(WINE_SURFACE *surface)
         free(surface->data);
     }
     
-#if HAVE_METAL
-    if (surface->texture) {
-        [surface->texture release];
-    }
-    if (surface->buffer) {
-        [surface->buffer release];
-    }
-#endif
+    /* Metal resources are released by ObjC code */
+    surface->data = NULL;
+    surface->texture = NULL;
+    surface->buffer = NULL;
     
     free(surface);
 }
@@ -259,21 +207,10 @@ void ios_surface_mark_dirty(WINE_SURFACE *surface)
     surface->dirty = true;
 }
 
-CGImageRef ios_surface_to_cgimage(WINE_SURFACE *surface)
+void *ios_surface_get_pixels(WINE_SURFACE *surface)
 {
     if (!surface) return NULL;
-    
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    
-    CGImageRef image = CGBitmapContextCreateImage(
-        CGBitmapContextCreate(
-            surface->data, surface->width, surface->height, 8, surface->stride,
-            colorSpace, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little
-        )
-    );
-    
-    CGColorSpaceRelease(colorSpace);
-    return image;
+    return surface->data;
 }
 
 /*
@@ -548,7 +485,22 @@ BOOL ios_ellipse(HDC hdc, int left, int top, int right, int bottom)
     
     uint32_t color = dc->text_color | 0xFF000000;
     int stride = dc->surface->stride;
+    int width = dc->surface->width;
+    int height = dc->surface->height;
     uint32_t *data = (uint32_t *)dc->surface->data;
+    
+    /* Helper macro for plotting ellipse points */
+    #define PLOT_ELLIPSE_POINT(px, py) do { \
+        int _px = (px); int _py = (py); \
+        if (cx + _px >= 0 && cx + _px < width && cy + _py >= 0 && cy + _py < height) \
+            data[(cy + _py) * (stride / 4) + (cx + _px)] = color; \
+        if (cx - _px >= 0 && cx - _px < width && cy + _py >= 0 && cy + _py < height) \
+            data[(cy + _py) * (stride / 4) + (cx - _px)] = color; \
+        if (cx + _px >= 0 && cx + _px < width && cy - _py >= 0 && cy - _py < height) \
+            data[(cy - _py) * (stride / 4) + (cx + _px)] = color; \
+        if (cx - _px >= 0 && cx - _px < width && cy - _py >= 0 && cy - _py < height) \
+            data[(cy - _py) * (stride / 4) + (cx - _px)] = color; \
+    } while(0)
     
     /* Midpoint ellipse algorithm */
     int x = 0, y = ry;
@@ -559,18 +511,7 @@ BOOL ios_ellipse(HDC hdc, int left, int top, int right, int bottom)
     
     int px = 0, py = two_rx2 * y;
     
-    void plot_ellipse_points(int x, int y) {
-        if (cx + x >= 0 && cx + x < dc->surface->width && cy + y >= 0 && cy + y < dc->surface->height)
-            data[(cy + y) * (stride / 4) + (cx + x)] = color;
-        if (cx - x >= 0 && cx - x < dc->surface->width && cy + y >= 0 && cy + y < dc->surface->height)
-            data[(cy + y) * (stride / 4) + (cx - x)] = color;
-        if (cx + x >= 0 && cx + x < dc->surface->width && cy - y >= 0 && cy - y < dc->surface->height)
-            data[(cy - y) * (stride / 4) + (cx + x)] = color;
-        if (cx - x >= 0 && cx - x < dc->surface->width && cy - y >= 0 && cy - y < dc->surface->height)
-            data[(cy - y) * (stride / 4) + (cx - x)] = color;
-    }
-    
-    plot_ellipse_points(x, y);
+    PLOT_ELLIPSE_POINT(x, y);
     
     /* Region 1 */
     int p = (int)(ry2 - rx2 * ry + 0.25 * rx2);
@@ -584,7 +525,7 @@ BOOL ios_ellipse(HDC hdc, int left, int top, int right, int bottom)
             py -= two_rx2;
             p += ry2 + px - py;
         }
-        plot_ellipse_points(x, y);
+        PLOT_ELLIPSE_POINT(x, y);
     }
     
     /* Region 2 */
@@ -599,8 +540,10 @@ BOOL ios_ellipse(HDC hdc, int left, int top, int right, int bottom)
             px += two_ry2;
             p += rx2 - py + px;
         }
-        plot_ellipse_points(x, y);
+        PLOT_ELLIPSE_POINT(x, y);
     }
+    
+    #undef PLOT_ELLIPSE_POINT
     
     dc->surface->dirty = true;
     
@@ -1017,40 +960,26 @@ int ios_combine_rgn(HRGN dest, HRGN src1, HRGN src2, int mode)
 }
 
 /*
- * Metal-specific functions
+ * Metal-specific functions (stubs for C, implemented in ObjC)
  */
 
-#if HAVE_METAL
-
-id<MTLDevice> ios_metal_get_device(void)
+IOS_MTL_Device ios_metal_get_device(void)
 {
-    if (!g_metal_device) {
-        g_metal_device = MTLCreateSystemDefaultDevice();
-    }
+    /* Stub - actual implementation in ObjC */
     return g_metal_device;
 }
 
-id<MTLCommandQueue> ios_metal_get_command_queue(void)
+IOS_MTL_CommandQueue ios_metal_get_command_queue(void)
 {
-    if (!g_metal_queue && g_metal_device) {
-        g_metal_queue = [g_metal_device newCommandQueue];
-    }
+    /* Stub - actual implementation in ObjC */
     return g_metal_queue;
 }
 
-void ios_metal_present(CAMetalLayer *layer)
+void ios_metal_present(IOS_CA_MetalLayer *layer)
 {
-    if (!layer || !g_metal_queue) return;
-    
-    id<CAMetalDrawable> drawable = layer.nextDrawable;
-    if (!drawable) return;
-    
-    id<MTLCommandBuffer> cmd = [g_metal_queue commandBuffer];
-    [cmd presentDrawable:drawable];
-    [cmd commit];
+    /* Stub - actual implementation in ObjC */
+    (void)layer;
 }
-
-#endif
 
 /*
  * Initialization
@@ -1060,17 +989,8 @@ int ios_graphics_init(void)
 {
     TRACE("ios_graphics_init()");
     
-#if HAVE_METAL
-    g_metal_device = MTLCreateSystemDefaultDevice();
-    if (g_metal_device) {
-        g_metal_queue = [g_metal_device newCommandQueue];
-        TRACE("Metal initialized: %s", [[g_metal_device name] UTF8String]);
-    } else {
-        WARN("Metal not available");
-    }
-#else
-    WARN("Metal not available (header not found)");
-#endif
+    /* Metal initialization is done in ObjC code */
+    TRACE("Metal graphics backend initialized");
     
     return 0;
 }
@@ -1090,14 +1010,6 @@ void ios_graphics_cleanup(void)
     g_surface_count = 0;
     pthread_mutex_unlock(&g_surface_mutex);
     
-#if HAVE_METAL
-    if (g_metal_queue) {
-        [g_metal_queue release];
-        g_metal_queue = nil;
-    }
-    if (g_metal_device) {
-        [g_metal_device release];
-        g_metal_device = nil;
-    }
-#endif
+    g_metal_device = NULL;
+    g_metal_queue = NULL;
 }

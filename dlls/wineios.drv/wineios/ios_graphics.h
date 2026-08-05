@@ -5,6 +5,9 @@
  *
  * Implements GDI/GDI+ functions using Apple's Metal framework.
  * This allows Wine to render Windows graphics on iOS devices.
+ *
+ * Note: This is a pure C header. The actual Metal implementation
+ * is in the Objective-C files (WineViewController.m).
  */
 
 #ifndef __WINE_IOS_GRAPHICS_H
@@ -12,21 +15,67 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <CoreGraphics/CoreGraphics.h>
-#include <Metal/Metal.h>
-#include <QuartzCore/QuartzCore.h>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+/* Define opaque types for Metal objects - actual definitions in ObjC */
+typedef struct __IOS_MTL_Device *IOS_MTL_Device;
+typedef struct __IOS_MTL_CommandQueue *IOS_MTL_CommandQueue;
+typedef struct __IOS_MTL_Texture *IOS_MTL_Texture;
+typedef struct __IOS_MTL_Buffer *IOS_MTL_Buffer;
+typedef struct __IOS_CA_MetalLayer *IOS_CA_MetalLayer;
 
-#if __has_include(<MetalKit/MetalKit.h>)
-#include <MetalKit/MetalKit.h>
+/* Wine-compatible Windows types */
+typedef uint16_t WORD;
+typedef uint32_t DWORD;
+typedef void *HANDLE;
+typedef const uint16_t *WCHAR;
+typedef uint8_t BYTE;
+typedef void *LPVOID;
+typedef const void *LPCVOID;
+
+/* BLENDFUNCTION for AlphaBlend */
+typedef struct {
+    uint8_t BlendOp;
+    uint8_t BlendFlags;
+    uint8_t SourceConstantAlpha;
+    uint8_t AlphaFormat;
+} BLENDFUNCTION;
+
+/* GDI constants */
+#define ALTERNATE 1
+#define WINDING 2
+#define BLACKONWHITE 1
+#define WHITEONBLACK 2
+#define COLORONCOLOR 3
+#define HALFTONE 4
+#define MAXSTRETCHBLTMODE 4
+
+#define AD_COUNTERCLOCKWISE 1
+#define AD_CLOCKWISE 2
+
+#define ANSI_CHARSET 0
+#define DEFAULT_CHARSET 1
+#define SYMBOL_CHARSET 2
+#define SHIFTJIS_CHARSET 128
+#define HANGUL_CHARSET 129
+#define GB2312_CHARSET 134
+#define CHINESEBIG5_CHARSET 136
+#define OEM_CHARSET 255
+
+#define ERROR 0
+#define NULLREGION 1
+#define SIMPLEREGION 2
+#define COMPLEXREGION 3
+
+#define GM_ERROR 0
+#define GM_COMPATIBLE 1
+#define GM_ADVANCED 2
+
+#define GDI_ERROR ((INT)-1)
+
+#define CLR_INVALID 0xFFFFFFFF
+
+/* Metal feature detection */
 #define HAVE_METAL 1
-#else
-#define HAVE_METAL 0
-#endif
-
-#pragma clang diagnostic pop
 
 /* Wine-compatible types */
 typedef void *HDC;
@@ -121,11 +170,9 @@ typedef enum {
 #define BLACKNESS  0x00000042L
 #define WHITENESS  0x00FF0062L
 
-/* Graphics modes */
-typedef enum {
-    GM_COMPATIBLE = 1,
-    GM_ADVANCED = 2
-} GM;
+/* Graphics modes (for reference - used as integers) */
+#define GM_COMPATIBLE_VAL 1
+#define GM_ADVANCED_VAL 2
 
 /* Background modes */
 typedef enum {
@@ -186,11 +233,9 @@ typedef struct wine_surface {
     void *data;           /* Pixel data */
     bool dirty;            /* Needs redraw */
     
-    /* Metal resources for GPU rendering */
-#if HAVE_METAL
-    id<MTLTexture> texture;
-    id<MTLBuffer> buffer;
-#endif
+    /* Metal resources for GPU rendering (opaque handles) */
+    IOS_MTL_Texture texture;
+    IOS_MTL_Buffer buffer;
     
     /* Palette (if applicable) */
     HPALETTE palette;
@@ -267,8 +312,8 @@ WINE_SURFACE *ios_surface_create(int width, int height, int bpp, const void *dat
 /* Create a surface from a DIB section */
 WINE_SURFACE *ios_surface_create_dib(int width, int height, int bpp, void **bits);
 
-/* Create a surface from a CoreGraphics image */
-WINE_SURFACE *ios_surface_create_from_cgimage(CGImageRef image);
+/* Create a surface from raw image data (BGRA format) */
+WINE_SURFACE *ios_surface_create_from_image(int width, int height, const void *data);
 
 /* Destroy a surface */
 void ios_surface_destroy(WINE_SURFACE *surface);
@@ -291,8 +336,8 @@ void ios_surface_unlock(WINE_SURFACE *surface);
 /* Mark surface as dirty */
 void ios_surface_mark_dirty(WINE_SURFACE *surface);
 
-/* Convert surface to CGImage */
-CGImageRef ios_surface_to_cgimage(WINE_SURFACE *surface);
+/* Get surface data pointer */
+void *ios_surface_get_pixels(WINE_SURFACE *surface);
 
 /*
  * Device Context functions
@@ -705,19 +750,17 @@ int ios_graphics_init(void);
 void ios_graphics_cleanup(void);
 
 /*
- * Metal-specific functions
+ * Metal-specific functions (implemented in ObjC)
  */
 
 /* Get Metal device */
-#if HAVE_METAL
-id<MTLDevice> ios_metal_get_device(void);
+IOS_MTL_Device ios_metal_get_device(void);
 
 /* Get Metal command queue */
-id<MTLCommandQueue> ios_metal_get_command_queue(void);
+IOS_MTL_CommandQueue ios_metal_get_command_queue(void);
 
 /* Present drawable */
-void ios_metal_present(CAMetalLayer *layer);
-#endif
+void ios_metal_present(IOS_CA_MetalLayer *layer);
 
 /*
  * Render to UIView

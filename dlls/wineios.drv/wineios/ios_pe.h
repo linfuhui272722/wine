@@ -11,6 +11,7 @@
 #define __WINE_IOS_PE_H
 
 #include <stdint.h>
+#include <stddef.h>
 #include <stdbool.h>
 
 /* PE Header structures */
@@ -148,6 +149,7 @@ typedef struct {
     PE_IMAGE *image;
     int num_exports;
     PE_EXPORT_ENTRY *exports;
+    int refcount;
 } PE_DLL;
 
 /*

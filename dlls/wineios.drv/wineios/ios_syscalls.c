@@ -29,6 +29,9 @@
 #include <mach/thread_act.h>
 #include <execinfo.h>
 
+/* extern declaration for environ */
+extern char **environ;
+
 #pragma clang diagnostic ignored "-Wunused-function"
 
 #define TRACE_SYSCALLS 0

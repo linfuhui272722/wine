@@ -21,6 +21,7 @@
 
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <sys/utsname.h>
 #include <dlfcn.h>
 #include <pthread.h>
 #include <spawn.h>

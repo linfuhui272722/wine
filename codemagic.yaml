@@ -219,5 +219,4 @@ workflows:
           fi
 
     artifacts:
-      - build/Wine.ipa
-      - build.log
+      - dlls/wineios.drv/ios-app/build/Wine.ipa

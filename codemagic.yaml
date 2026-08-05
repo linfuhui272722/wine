@@ -21,11 +21,14 @@ workflows:
         script: |
           set -e
           xcodebuild -version
+          xcrun --show-sdk-path --sdk iphoneos
       - name: Verify project
         script: |
           set -e
-          cd $APP_DIR
-          ls dlls/wineios.drv/ios-app/Wine.xcodeproj/
+          cd $APP_DIR/dlls/wineios.drv/ios-app
+          ls -la Wine.xcodeproj/
+          ls -la Wine.xcodeproj/xcshareddata/xcschemes/
+          xcodebuild -project Wine.xcodeproj -list
       - name: Setup
         script: |
           set -e
@@ -47,6 +50,7 @@ workflows:
             fi
           done
           ar rcs dlls/wineios.drv/ios-app/build/libwineios.a dlls/wineios.drv/ios-app/build/objects/wineios/*.o 2>/dev/null || true
+          ls -la dlls/wineios.drv/ios-app/build/libwineios.a
       - name: Compile iOS App
         script: |
           set -e
@@ -61,34 +65,47 @@ workflows:
             fi
           done
           ar rcs dlls/wineios.drv/ios-app/build/libwineapp.a dlls/wineios.drv/ios-app/build/objects/app/*.o 2>/dev/null || true
+          ls -la dlls/wineios.drv/ios-app/build/libwineapp.a
       - name: Copy libraries
         script: |
           set -e
           cd $APP_DIR
           cp dlls/wineios.drv/ios-app/build/libwineios.a dlls/wineios.drv/ios-app/
           cp dlls/wineios.drv/ios-app/build/libwineapp.a dlls/wineios.drv/ios-app/
-      - name: Build
+      - name: Build with xcodebuild
         script: |
           set -e
           cd $APP_DIR/dlls/wineios.drv/ios-app
-          xcodebuild -project Wine.xcodeproj -sdk iphoneos -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO IPHONEOS_DEPLOYMENT_TARGET=$MIN_IOS_VERSION ARCHS=arm64 2>&1 | tail -30
+          xcodebuild -project Wine.xcodeproj -scheme Wine -sdk iphoneos -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO IPHONEOS_DEPLOYMENT_TARGET=$MIN_IOS_VERSION ARCHS=arm64 2>&1 | tee build.log
+          echo "=== BUILD LOG TAIL ==="
+          tail -100 build.log
+          if grep -q "BUILD SUCCEEDED" build.log; then
+            echo "BUILD SUCCEEDED"
+          elif grep -q "BUILD FAILED" build.log; then
+            echo "BUILD FAILED"
+            exit 1
+          fi
       - name: Find app
         script: |
           set -e
           cd $APP_DIR
+          echo "=== Looking for Wine.app ==="
+          find ~/Library/Developer/Xcode/DerivedData -name "Wine.app" -type d 2>/dev/null
           APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "Wine.app" -type d 2>/dev/null | head -1)
-          if [ -z "$APP_PATH" ]; then
-            echo "App not found"
+          echo "Found path: $APP_PATH"
+          if [ -z "$APP_PATH" ] || [ ! -d "$APP_PATH" ]; then
+            echo "App not found in DerivedData"
             exit 1
           fi
-          echo "Found: $APP_PATH"
           cp -R "$APP_PATH" dlls/wineios.drv/ios-app/build/Wine.app
-          ls dlls/wineios.drv/ios-app/build/Wine.app/
+          ls -la dlls/wineios.drv/ios-app/build/Wine.app/
+          ls -la dlls/wineios.drv/ios-app/build/Wine.app/Wine 2>/dev/null || echo "No Wine executable"
       - name: Create IPA
         script: |
           set -e
           cd $APP_DIR/dlls/wineios.drv/ios-app/build
           mkdir -p Payload
+          rm -rf Payload/Wine.app
           cp -R Wine.app Payload/
           mkdir -p Payload/Wine.app/wine/drive_c
           printf "[wine]\nVersion=8.0\n" > Payload/Wine.app/wine/config

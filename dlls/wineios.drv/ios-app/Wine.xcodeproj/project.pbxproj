@@ -144,9 +144,7 @@ B0BCE0FADDD34FE3A8F773BA /* Resources */ = {
 		isa = PBXResourcesBuildPhase;
 		buildActionMask = 2147483647;
 		files = (
-			2C1E17F0C8654E2E9D8B2390 /* Info.plist in Resources */,
 			C7A38F4321274851B8934F4C /* LaunchScreen.storyboard in Resources */,
-			C934D7B2468C46FA82E1C50D /* Wine.entitlements in Resources */,
 		);
 		runOnlyForDeploymentPostprocessing = 0;
 	};

@@ -168,6 +168,7 @@ B0BCE0FADDD34FE3A8F773BA /* Resources */ = {
 			1971D8145FD246EAB8188DA9 /* WineEventQueue.m in Sources */,
 			86218C445C6F4A5EB0356043 /* WineBridge.m in Sources */,
 			5DEA934627464B7285396AF3 /* WineJIT.m in Sources */,
+                        CC000000000000000000001 /* WineMenuViewController.m in Sources */,
 			96CB6C96F0E54A65BD71DD9A /* main.m in Sources */,
 		);
 		runOnlyForDeploymentPostprocessing = 0;

@@ -25,45 +25,58 @@ if ! command -v xcodebuild &> /dev/null; then
     exit 1
 fi
 
+# Build Wine iOS core library first
+echo "=== Building Wine iOS Core ==="
+cd "$SCRIPT_DIR/../wineios"
+make clean 2>/dev/null || true
+make ios
+cp libwineios.a "$SCRIPT_DIR/"
+cd "$SCRIPT_DIR"
+
 # Clean previous build
+echo ""
 echo "Cleaning previous build..."
 rm -rf "$BUILD_DIR/Wine.app"
 rm -rf "$BUILD_DIR/Wine.ipa"
+rm -rf ~/Library/Developer/Xcode/DerivedData/Wine-* 2>/dev/null || true
 
 # Build using xcodebuild
 echo ""
 echo "Building with Xcode..."
-cd "$SCRIPT_DIR"
-
-xcodebuild -project project.pbxproj \
+xcodebuild -project Wine.xcodeproj \
     -scheme Wine \
-    -configuration Release \
+    -configuration Debug \
     -destination 'generic/platform=iOS' \
     CODE_SIGN_IDENTITY="-" \
     CODE_SIGNING_REQUIRED=NO \
     CODE_SIGNING_ALLOWED=NO \
+    DEVELOPMENT_TEAM="" \
+    IPHONEOS_DEPLOYMENT_TARGET=13.0 \
+    ARCHS="arm64" \
+    VALID_ARCHS="arm64" \
     BUILD_LIBRARY_FOR_DISTRIBUTING=NO \
-    clean build 2>&1 | tee "$BUILD_DIR/build.log"
+    2>&1 | tee "$BUILD_DIR/build.log"
 
-# Find the built app
-echo ""
-echo "Looking for built app..."
-if [ -d "$BUILD_DIR/Release-iphoneos/Wine.app" ]; then
-    APP_PATH="$BUILD_DIR/Release-iphoneos/Wine.app"
-elif [ -d "$BUILD_DIR/Build/Products/Release-iphoneos/Wine.app" ]; then
-    APP_PATH="$BUILD_DIR/Build/Products/Release-iphoneos/Wine.app"
-else
-    # Try to find it
-    APP_PATH=$(find "$BUILD_DIR" -name "Wine.app" -type d 2>/dev/null | head -1)
+BUILD_RESULT=${PIPESTATUS[0]}
+
+if [ $BUILD_RESULT -ne 0 ]; then
+    echo "ERROR: Build failed!"
+    exit 1
 fi
 
+# Find the built app in DerivedData
+echo ""
+echo "Looking for built app..."
+APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "Wine.app" -type d 2>/dev/null | head -1)
+
 if [ -z "$APP_PATH" ] || [ ! -d "$APP_PATH" ]; then
-    echo "ERROR: Built app not found"
+    echo "ERROR: Built app not found in DerivedData"
     echo "Check build log: $BUILD_DIR/build.log"
     exit 1
 fi
 
 echo "Found app at: $APP_PATH"
+ls -la "$APP_PATH/"
 
 # Copy app to Payload directory
 echo ""

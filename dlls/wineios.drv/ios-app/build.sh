@@ -1,6 +1,6 @@
 #!/bin/bash
 # Wine iOS Cross-Compilation Build Script
-# This script compiles the iOS app using theos SDK and creates an IPA
+# This script compiles the iOS app using theos SDK and creates an IPA structure
 
 set -e
 
@@ -47,6 +47,14 @@ clang $COMPILE_FLAGS -c WineBridge.m -o "$BUILD_DIR/WineBridge.o"
 echo "  Compiling WineJIT.m..."
 clang $COMPILE_FLAGS -c WineJIT.m -o "$BUILD_DIR/WineJIT.o"
 
+# Build Wine iOS core library
+echo ""
+echo "=== Building Wine iOS Core ==="
+cd "$SCRIPT_DIR/../wineios"
+make ios
+cp libwineios.a "$BUILD_DIR/"
+cd "$SCRIPT_DIR"
+
 echo "Compilation complete!"
 
 # Show object files
@@ -59,12 +67,12 @@ echo "=== Note on Linking ==="
 echo "Due to Linux limitations, native linking to Mach-O format is not possible."
 echo "To complete the build:"
 echo "1. Copy this project to a macOS machine with Xcode installed"
-echo "2. Open project.pbxproj in Xcode"
+echo "2. Open Wine.xcodeproj in Xcode"
 echo "3. Select your signing identity (or use 'Sign to Run Locally')"
 echo "4. Build and Run to create the IPA"
 echo ""
 echo "Alternatively, use the following command on macOS:"
-echo "  xcodebuild -project project.pbxproj -scheme Wine -configuration Release"
+echo "  ./build_on_mac.sh"
 
 # Create IPA structure for manual assembly
 echo ""
@@ -76,6 +84,9 @@ mkdir -p "$IPA_DIR"
 cp -r Info.plist "$IPA_DIR/"
 cp -r Wine.entitlements "$IPA_DIR/"
 cp -r LaunchScreen.storyboard "$IPA_DIR/"
+
+# Copy library
+cp libwineios.a "$IPA_DIR/"
 
 # Create placeholder executable info
 cat > "$IPA_DIR/Executable.info" << EXECINFO

@@ -216,6 +216,14 @@ B2816EE6C00C4FE1AB2E69B9 /* Debug */ = {
 			CODE_SIGN_STYLE = Automatic;
 			CURRENT_PROJECT_VERSION = 1;
 			DEVELOPMENT_TEAM = "";
+                        HEADER_SEARCH_PATHS = (
+                            "$(PROJECT_DIR)/../wineios",
+                            "$(PROJECT_DIR)",
+                        );
+                        LIBRARY_SEARCH_PATHS = (
+                            "$(PROJECT_DIR)/../wineios",
+                            "$(inherited)",
+                        );
 			ENABLE_BITCODE = NO;
 			INFOPLIST_FILE = Info.plist;
 			INFOPLIST_KEY_CFBundleDisplayName = Wine;
@@ -246,6 +254,14 @@ D780CCF11A6840C4BB8AA5FC /* Release */ = {
 			CODE_SIGN_ENTITLEMENTS = Wine.entitlements;
 			CODE_SIGN_IDENTITY = "-";
 			CODE_SIGN_STYLE = Automatic;
+                        HEADER_SEARCH_PATHS = (
+                            "$(PROJECT_DIR)/../wineios",
+                            "$(PROJECT_DIR)",
+                        );
+                        LIBRARY_SEARCH_PATHS = (
+                            "$(PROJECT_DIR)/../wineios",
+                            "$(inherited)",
+                        );
 			CURRENT_PROJECT_VERSION = 1;
 			DEVELOPMENT_TEAM = "";
 			ENABLE_BITCODE = NO;

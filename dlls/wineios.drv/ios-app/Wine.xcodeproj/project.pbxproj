@@ -240,6 +240,8 @@ B2816EE6C00C4FE1AB2E69B9 /* Debug */ = {
 			OTHER_LDFLAGS = (
 				"-ObjC",
 				"-lc++",
+			"-lz",
+			"-lwineios",
 			);
 			PRODUCT_BUNDLE_IDENTIFIER = com.wine.ios.app;
 			PRODUCT_NAME = "$(TARGET_NAME)";
@@ -280,6 +282,8 @@ D780CCF11A6840C4BB8AA5FC /* Release */ = {
 			OTHER_LDFLAGS = (
 				"-ObjC",
 				"-lc++",
+			"-lz",
+			"-lwineios",
 			);
 			PRODUCT_BUNDLE_IDENTIFIER = com.wine.ios.app;
 			PRODUCT_NAME = "$(TARGET_NAME)";

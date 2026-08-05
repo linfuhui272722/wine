@@ -16,7 +16,6 @@ D57C6F50E1B84F9D9D35DE6F /* WineViewController.m in Sources */ = {isa = PBXBuild
 2C1E17F0C8654E2E9D8B2390 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 600000F697F8460A90D9AF6B /* Info.plist */; };
 C7A38F4321274851B8934F4C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3AD75BB556640358AC3970E /* LaunchScreen.storyboard */; };
 C934D7B2468C46FA82E1C50D /* Wine.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 1755E86E8F54425A91D99373 /* Wine.entitlements */; };
-AA111111BBBBCCCCDDDD00 /* libwineios.a in Sources */ = {isa = PBXBuildFile; fileRef = BB222222CCCCDDDEEEE00 /* libwineios.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -164,7 +163,6 @@ B0BCE0FADDD34FE3A8F773BA /* Resources */ = {
 			86218C445C6F4A5EB0356043 /* WineBridge.m in Sources */,
 			5DEA934627464B7285396AF3 /* WineJIT.m in Sources */,
 			96CB6C96F0E54A65BD71DD9A /* main.m in Sources */,
-AA111111BBBBCCCCDDDD00 /* libwineios.a in Sources */,
 		);
 		runOnlyForDeploymentPostprocessing = 0;
 	};

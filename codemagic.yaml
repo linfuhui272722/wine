@@ -70,11 +70,11 @@ workflows:
           echo "=== Preparing Libraries ==="
           cd $APP_DIR/dlls/wineios.drv/ios-app
           
-          # Copy the static library
+          # Copy the static library to ios-app directory (where Xcode can find it)
           cp ../wineios/libwineios.a .
           
-          # List ObjC source files
-          ls -la *.m *.h
+          # List files
+          ls -la libwineios.a *.m *.h
       
       # Step 5: Clean build directory
       - name: Clean build artifacts

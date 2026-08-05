@@ -3,20 +3,26 @@
 # Copyright 2024 Wine Project
 #
 # Usage: 
-#   make SDK=iPhoneOS16.5        # Cross-compile for iOS
-#   make                         # Native build (for testing on macOS)
-
-# SDK selection
-SDK = iPhoneOS16.5
-SYSROOT = /workspace/project/ios-sdk/$(SDK).sdk
+#   make ios SDK=iPhoneOS16.5        # Cross-compile for iOS (from Linux with iOS SDK)
+#   make                             # Native build on macOS (uses Xcode SDK)
 
 # Toolchain
 CC = clang
 AR = ar
 
-# iOS cross-compilation flags
-IOS_CFLAGS = -target arm64-apple-ios -isysroot $(SYSROOT)
-IOS_CFLAGS += -Wall -Wextra -I.
+# Detect platform
+ifeq ($(shell uname),Darwin)
+# macOS - native build using Xcode SDK
+# On macOS, Xcode uses its SDK automatically, no -isysroot needed
+IOS_CFLAGS = -target arm64-apple-ios -Wall -Wextra -I. -isysroot $(shell xcrun --sdk iphoneos --show-sdk-path)
+TARGET = macOS-native
+else
+# Linux - cross-compile with external SDK
+SDK ?= iPhoneOS16.5
+SYSROOT = /workspace/project/ios-sdk/$(SDK).sdk
+IOS_CFLAGS = -target arm64-apple-ios -isysroot $(SYSROOT) -Wall -Wextra -I.
+TARGET = linux-cross
+endif
 
 # Source files for Wine iOS core library
 CORE_SRCS = ios_syscalls.c ios_graphics.c ios_pe.c wineios.c
@@ -34,7 +40,7 @@ ios: $(CORE_OBJS)
 	$(AR) rcs $(LIB) $(CORE_OBJS)
 	@echo "Built iOS library: $(LIB)"
 	@echo "Architecture: arm64"
-	@echo "SDK: $(SDK)"
+	@echo "Target: $(TARGET)"
 
 # Wine iOS object files
 ios_syscalls.o: ios_syscalls.c ios_syscalls.h

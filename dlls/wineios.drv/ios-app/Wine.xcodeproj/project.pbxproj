@@ -17,14 +17,6 @@ D57C6F50E1B84F9D9D35DE6F /* WineViewController.m in Sources */ = {isa = PBXBuild
 C7A38F4321274851B8934F4C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3AD75BB556640358AC3970E /* LaunchScreen.storyboard */; };
 C934D7B2468C46FA82E1C50D /* Wine.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 1755E86E8F54425A91D99373 /* Wine.entitlements */; };
 AA111111BBBBCCCCDDDD00 /* libwineios.a in Sources */ = {isa = PBXBuildFile; fileRef = BB222222CCCCDDDEEEE00 /* libwineios.a */; };
-		AA0000000000000000000001 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000011 /* UIKit.framework */; };
-		AA0000000000000000000002 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000012 /* Metal.framework */; };
-		AA0000000000000000000003 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000013 /* OpenGLES.framework */; };
-		AA0000000000000000000004 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000014 /* QuartzCore.framework */; };
-		AA0000000000000000000005 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000015 /* Foundation.framework */; };
-		AA0000000000000000000006 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000016 /* libz.tbd */; };
-		AA0000000000000000000007 /* libobjc.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000017 /* libobjc.tbd */; };
-		AA0000000000000000000008 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000018 /* libc++.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,14 +36,6 @@ CF1182B4F80340E098B2AADF /* WineJIT.m */ = {isa = PBXFileReference; lastKnownFil
 D3AD75BB556640358AC3970E /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 1755E86E8F54425A91D99373 /* Wine.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Wine.entitlements; sourceTree = "<group>"; };
 BB222222CCCCDDDEEEE00 /* libwineios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwineios.a; sourceTree = "<group>"; };
-		AA0000000000000000000011 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		AA0000000000000000000012 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
-		AA0000000000000000000013 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
-		AA0000000000000000000014 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		AA0000000000000000000015 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		AA0000000000000000000016 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
-		AA0000000000000000000017 /* libobjc.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libobjc.tbd; path = usr/lib/libobjc.tbd; sourceTree = SDKROOT; };
-		AA0000000000000000000018 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libc++.tbd; path = usr/lib/libc++.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -256,11 +240,6 @@ B2816EE6C00C4FE1AB2E69B9 /* Debug */ = {
 			);
 			MARKETING_VERSION = 1.0;
 			OTHER_LDFLAGS = (
-"-ObjC",
-"-lc++",
-"-lz",
-);
-				OTHER_LDFLAGS = (
 				"-ObjC",
 				"-lc++",
 			);
@@ -301,11 +280,6 @@ D780CCF11A6840C4BB8AA5FC /* Release */ = {
 			);
 			MARKETING_VERSION = 1.0;
 			OTHER_LDFLAGS = (
-"-ObjC",
-"-lc++",
-"-lz",
-);
-				OTHER_LDFLAGS = (
 				"-ObjC",
 				"-lc++",
 			);

@@ -32,6 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 /** Active Wine windows */
 @property (strong, nonatomic) NSMutableDictionary<NSNumber *, WineViewController *> *wineWindows;
 
+/** Main Wine view controller */
+@property (strong, nonatomic, nullable) WineViewController *mainWineViewController;
+
 /** Documents directory path for Wine */
 @property (copy, nonatomic, readonly) NSString *winePrefixPath;
 

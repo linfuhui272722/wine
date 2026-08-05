@@ -368,16 +368,43 @@
 
 - (void)presentMetalSurface
 {
-    if (!_metalLayer || !_surfaceBuffer) return;
+    if (!_metalLayer) return;
     
     id<CAMetalDrawable> drawable = _metalLayer.nextDrawable;
     if (!drawable) return;
     
     id<MTLCommandBuffer> commandBuffer = [_metalCommandQueue commandBuffer];
     
-    // Copy surface buffer to drawable texture
-    // This is a simplified implementation - real version would use compute shader
-    // or optimized memcpy for better performance
+    // Get the drawable's texture
+    id<MTLTexture> texture = drawable.texture;
+    
+    // Create a simple gradient texture for testing
+    MTLRegion region = MTLRegionMake2D(0, 0, (NSUInteger)texture.width, (NSUInteger)texture.height);
+    
+    // Allocate buffer for BGRA pixels
+    NSUInteger pixelCount = texture.width * texture.height;
+    NSMutableData *pixelData = [NSMutableData dataWithLength:pixelCount * 4];
+    
+    // Fill with gradient (wine-themed: dark red to purple)
+    uint32_t *pixels = (uint32_t *)pixelData.mutableBytes;
+    for (NSUInteger y = 0; y < texture.height; y++) {
+        for (NSUInteger x = 0; x < texture.width; x++) {
+            float t = (float)y / (float)texture.height;
+            // BGRA format
+            uint8_t r = (uint8_t)(100 + 100 * (1 - t));  // Red component
+            uint8_t g = (uint8_t)(20 + 50 * (1 - t));   // Green component
+            uint8_t b = (uint8_t)(50 + 100 * t);         // Blue component
+            uint8_t a = 255;
+            pixels[y * texture.width + x] = (r << 16) | (g << 8) | b | (a << 24);
+        }
+    }
+    
+    // Copy to texture
+    [texture replaceRegion:region mipmapLevel:0 withBytes:pixelData.bytes bytesPerRow:texture.width * 4];
+    
+    // Create blit command
+    id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder endEncoding];
     
     [commandBuffer presentDrawable:drawable];
     [commandBuffer commit];

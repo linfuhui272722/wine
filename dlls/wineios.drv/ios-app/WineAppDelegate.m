@@ -52,16 +52,6 @@
     // Create main window
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     
-    // Create navigation controller with root view
-    UIViewController *rootVC = [[UIViewController alloc] init];
-    rootVC.view.backgroundColor = [UIColor blackColor];
-    
-    self.navigationController = [[UINavigationController alloc] initWithRootViewController:rootVC];
-    self.navigationController.navigationBarHidden = YES;
-    
-    self.window.rootViewController = self.navigationController;
-    [self.window makeKeyAndVisible];
-    
     // Initialize Wine windows dictionary
     self.wineWindows = [NSMutableDictionary dictionary];
     
@@ -70,6 +60,20 @@
     
     // Create dispatch queue for Wine operations
     self.wineDispatchQueue = dispatch_queue_create("com.wine.ios.dispatch", DISPATCH_QUEUE_SERIAL);
+    
+    // Create Wine view controller as main view
+    WineViewController *wineVC = [[WineViewController alloc] initWithHwnd:1];
+    wineVC.view.backgroundColor = [UIColor blackColor];
+    
+    // Create navigation controller
+    self.navigationController = [[UINavigationController alloc] initWithRootViewController:wineVC];
+    self.navigationController.navigationBarHidden = YES;
+    
+    self.window.rootViewController = self.navigationController;
+    [self.window makeKeyAndVisible];
+    
+    // Store reference to main Wine view controller
+    self.mainWineViewController = wineVC;
     
     // Initialize Wine environment
     dispatch_async(self.wineDispatchQueue, ^{

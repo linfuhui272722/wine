@@ -1,0 +1,8 @@
+MODULE    = wineios.drv
+UNIXLIB   = wineios.so
+IMPORTS   = ntoskrnl
+UNIX_LIBS = -lwin32u $(PTHREAD_LIBS) -framework IOKit -framework CoreGraphics -framework UIKit -framework Metal
+
+SOURCES = \
+	dllmain.c \
+	unix.c

@@ -23,10 +23,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     self.title = @"Wine iOS";
     self.view.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.15 alpha:1.0];
-    
+
     [self setupMenuItems];
     [self setupUI];
 }
@@ -43,7 +43,7 @@
     // Header view with Wine logo/title
     UIView *headerView = [[UIView alloc] init];
     headerView.frame = CGRectMake(0, 0, self.view.bounds.size.width, 180);
-    
+
     // Wine title
     UILabel *titleLabel = [[UILabel alloc] init];
     titleLabel.text = @"Wine iOS";
@@ -52,7 +52,7 @@
     titleLabel.textAlignment = NSTextAlignmentCenter;
     titleLabel.frame = CGRectMake(0, 60, self.view.bounds.size.width, 50);
     [headerView addSubview:titleLabel];
-    
+
     // Version label
     UILabel *versionLabel = [[UILabel alloc] init];
     versionLabel.text = @"Windows Compatibility Layer for iOS";
@@ -61,7 +61,7 @@
     versionLabel.textAlignment = NSTextAlignmentCenter;
     versionLabel.frame = CGRectMake(0, 115, self.view.bounds.size.width, 25);
     [headerView addSubview:versionLabel];
-    
+
     // Open File button (prominent)
     UIButton *openFileButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [openFileButton setTitle:@"  Open EXE or ZIP  " forState:UIControlStateNormal];
@@ -72,7 +72,7 @@
     openFileButton.frame = CGRectMake(40, 145, self.view.bounds.size.width - 80, 50);
     [openFileButton addTarget:self action:@selector(openFilePicker) forControlEvents:UIControlEventTouchUpInside];
     [headerView addSubview:openFileButton];
-    
+
     // Table view
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleInsetGrouped];
     _tableView.delegate = self;
@@ -83,7 +83,7 @@
     _tableView.tableHeaderView = headerView;
     _tableView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_tableView];
-    
+
     // Layout
     [NSLayoutConstraint activateConstraints:@[
         [_tableView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
@@ -106,21 +106,21 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellIdentifier = @"MenuCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    
+
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
         cell.backgroundColor = [UIColor colorWithRed:0.15 green:0.15 blue:0.2 alpha:1.0];
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.textLabel.font = [UIFont systemFontOfSize:17];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        
+
         UIImageView *accessoryImage = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:@"chevron.right"]];
         accessoryImage.tintColor = [UIColor colorWithWhite:0.5 alpha:1.0];
         cell.accessoryView = accessoryImage;
     }
-    
+
     cell.textLabel.text = _menuItems[indexPath.section][indexPath.row];
-    
+
     return cell;
 }
 
@@ -145,9 +145,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
+
     NSString *item = _menuItems[indexPath.section][indexPath.row];
-    
+
     if ([item isEqualToString:@"Open EXE File"]) {
         [self openFilePicker];
     } else if ([item isEqualToString:@"Open ZIP Archive"]) {
@@ -166,25 +166,17 @@
 #pragma mark - Actions
 
 - (void)openFilePicker {
-    NSArray *types = @[
-        @"com.microsoft.windows.executable",
-        @"public.exe",
-        @"public.file-executable",
-        @"com.winamp.mp3",  // fallback
-        @"public.zip-archive"
-    ];
-    
-    // Use UTType for modern API
+    // Use UTTypeData which accepts all files, then filter by extension
     if (@available(iOS 14.0, *)) {
-        NSMutableArray<UTType *> *utTypes = [NSMutableArray array];
-        [utTypes addObject:UTTypeExecutable];
-        [utTypes addObject:UTTypeData];
+        NSArray<UTType *> *utTypes = @[UTTypeData];
         
         UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:utTypes];
         picker.delegate = self;
         picker.allowsMultipleSelection = NO;
+        picker.shouldShowFileExtensions = YES;
         [self presentViewController:picker animated:YES completion:nil];
     } else {
+        NSArray *types = @[@"public.data", @"public.content"];
         UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:types inMode:UIDocumentPickerModeOpen];
         picker.delegate = self;
         picker.allowsMultipleSelection = NO;
@@ -198,6 +190,7 @@
         UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:utTypes];
         picker.delegate = self;
         picker.allowsMultipleSelection = NO;
+        picker.shouldShowFileExtensions = YES;
         [self presentViewController:picker animated:YES completion:nil];
     } else {
         NSArray *types = @[@"public.zip-archive", @"com.pkware.zip-archive"];
@@ -211,35 +204,56 @@
 #pragma mark - UIDocumentPickerDelegate
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
-    if (urls.count == 0) return;
-    
+    if (urls.count == 0) {
+        [self showAlert:@"No File Selected" message:@"Please select a file."];
+        return;
+    }
+
     NSURL *url = urls.firstObject;
-    [url startAccessingSecurityScopedResource];
     
+    // Get file extension
+    NSString *extension = [[url pathExtension] lowercaseString];
+    
+    // Only accept .exe and .zip files
+    if (![extension isEqualToString:@"exe"] && ![extension isEqualToString:@"zip"]) {
+        [self showAlert:@"Invalid File Type" message:@"Please select an .exe or .zip file."];
+        return;
+    }
+
+    // Start accessing security-scoped resource
+    BOOL accessGranted = [url startAccessingSecurityScopedResource];
+    if (!accessGranted) {
+        [self showAlert:@"Access Denied" message:@"Cannot access the selected file."];
+        return;
+    }
+
     NSString *path = url.path;
-    
+
     // Copy to app's documents directory
     NSString *documentsDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
     NSString *wineAppsDir = [documentsDir stringByAppendingPathComponent:@"WineApps"];
-    
-    [[NSFileManager defaultManager] createDirectoryAtPath:wineAppsDir withIntermediateDirectories:YES attributes:nil error:nil];
-    
+
+    NSError *dirError = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:wineAppsDir withIntermediateDirectories:YES attributes:nil error:&dirError];
+
     NSString *filename = [path lastPathComponent];
     NSString *destPath = [wineAppsDir stringByAppendingPathComponent:filename];
-    
+
     // Remove existing if present
     [[NSFileManager defaultManager] removeItemAtPath:destPath error:nil];
-    
-    NSError *error = nil;
-    [[NSFileManager defaultManager] copyItemAtPath:path toPath:destPath error:&error];
-    
+
+    NSError *copyError = nil;
+    BOOL success = [[NSFileManager defaultManager] copyItemAtPath:path toPath:destPath error:&copyError];
+
     [url stopAccessingSecurityScopedResource];
-    
-    if (error) {
-        [self showAlert:@"Error" message:[NSString stringWithFormat:@"Failed to copy file: %@", error.localizedDescription]];
+
+    if (!success) {
+        [self showAlert:@"Copy Failed" message:[NSString stringWithFormat:@"Failed to copy file: %@", copyError.localizedDescription ?: @"Unknown error"]];
         return;
     }
-    
+
+    NSLog(@"File copied to: %@", destPath);
+
     // Notify delegate
     if ([self.delegate respondsToSelector:@selector(wineMenuDidSelectExecutableAtPath:)]) {
         [self.delegate wineMenuDidSelectExecutableAtPath:destPath];
@@ -247,7 +261,7 @@
 }
 
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller {
-    // User cancelled
+    NSLog(@"Document picker cancelled");
 }
 
 #pragma mark - Navigation
@@ -271,7 +285,7 @@
 - (void)showAbout {
     NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] ?: @"1.0";
     NSString *build = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"] ?: @"1";
-    
+
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"About Wine iOS"
                                                                    message:[NSString stringWithFormat:@"Wine iOS v%@ (%@)\n\nWine is a free, open-source compatibility layer that allows you to run Windows applications on iOS.\n\nCopyright © 2024 Wine Project", version, build]
                                                             preferredStyle:UIAlertControllerStyleAlert];

@@ -1,20 +1,7 @@
-# Codemagic CI/CD Configuration for Wine iOS
-#
-# Builds Wine iOS application and generates IPA for jailbroken devices
-# 
-# Usage:
-#   1. Fork this repository on GitHub
-#   2. Go to https://codemagic.io and sign in with GitHub
-#   3. Click "Add app" and select your forked repository
-#   4. Codemagic will auto-detect this codemagic.yaml
-#   5. Click "Start new build"
-#
-
 workflows:
   ios-build:
     name: Wine iOS Build
     max_build_duration: 60
-    
     environment:
       vars:
         MIN_IOS_VERSION: "13.0"
@@ -22,7 +9,6 @@ workflows:
         APP_DIR: "/Users/builder/clone"
         SDK_PATH: "$(xcrun --sdk iphoneos --show-sdk-path)"
       xcode: latest
-      
     triggering:
       events:
         - push
@@ -32,124 +18,74 @@ workflows:
           include: true
         - pattern: main
           include: true
-    
     scripts:
-      # Step 1: Verify environment
       - name: Verify environment
         script: |
-          echo "=== Environment ==="
+          set -e
+          echo "Environment check"
           xcodebuild -version
-          echo "SDK Path: $SDK_PATH"
-
-      # Step 2: Setup build directory
       - name: Setup build directory
         script: |
+          set -e
           cd $APP_DIR
           rm -rf dlls/wineios.drv/ios-app/build
           mkdir -p dlls/wineios.drv/ios-app/build
-          rm -rf ~/Library/Developer/Xcode/DerivedData/Wine-* 2>/dev/null || true
-          echo "Build directory ready"
-
-      # Step 3: Compile Wine iOS Core
+          rm -rf ~/Library/Developer/Xcode/DerivedData/Wine-*
+          echo "Ready"
       - name: Compile Wine iOS Core
         script: |
+          set -e
           cd $APP_DIR
           SDK="$SDK_PATH"
           TARGET="arm64-apple-ios"
-          MIN_VERSION="$MIN_IOS_VERSION"
-          CFLAGS="-target $TARGET -isysroot $SDK -miphoneos-version-min=$MIN_VERSION -fPIC -fno-common -Wall -O2 -DNDEBUG"
+          CFLAGS="-target $TARGET -isysroot $SDK -miphoneos-version-min=$MIN_IOS_VERSION -fPIC -fno-common -Wall -O2"
           mkdir -p dlls/wineios.drv/ios-app/build/objects/wineios
           for src in dlls/wineios.drv/wineios/*.c; do
-            if [ -f "$src" ]; then
-              NAME=$(basename "$src" .c)
-              clang $CFLAGS -I"dlls/wineios.drv/wineios" -c "$src" -o "dlls/wineios.drv/ios-app/build/objects/wineios/${NAME}.o" 2>&1 | grep -v "^warning:" || true
-            fi
+            NAME=$(basename "$src" .c)
+            clang $CFLAGS -Idlls/wineios.drv/wineios -c "$src" -o "dlls/wineios.drv/ios-app/build/objects/wineios/${NAME}.o" 2>/dev/null || true
           done
           ar rcs dlls/wineios.drv/ios-app/build/libwineios.a dlls/wineios.drv/ios-app/build/objects/wineios/*.o 2>/dev/null || true
-          echo "Wine iOS Core compiled"
-
-      # Step 4: Compile iOS App
+          echo "Core done"
       - name: Compile iOS App
         script: |
+          set -e
           cd $APP_DIR
           SDK="$SDK_PATH"
           TARGET="arm64-apple-ios"
-          MIN_VERSION="$MIN_IOS_VERSION"
-          CFLAGS="-target $TARGET -isysroot $SDK -miphoneos-version-min=$MIN_VERSION -fPIC -fno-common -Wall -O2 -fobjc-arc -DNS_BLOCKS_ASSERTED=YES"
+          CFLAGS="-target $TARGET -isysroot $SDK -miphoneos-version-min=$MIN_IOS_VERSION -fPIC -fno-common -Wall -O2 -fobjc-arc"
           mkdir -p dlls/wineios.drv/ios-app/build/objects/app
           for src in dlls/wineios.drv/ios-app/*.m; do
-            if [ -f "$src" ]; then
-              NAME=$(basename "$src" .m)
-              clang $CFLAGS -I"dlls/wineios.drv/ios-app" -I"dlls/wineios.drv/wineios" -c "$src" -o "dlls/wineios.drv/ios-app/build/objects/app/${NAME}.o" 2>&1 | grep -v "^warning:" || true
-            fi
+            NAME=$(basename "$src" .m)
+            clang $CFLAGS -Idlls/wineios.drv/ios-app -Idlls/wineios.drv/wineios -c "$src" -o "dlls/wineios.drv/ios-app/build/objects/app/${NAME}.o" 2>/dev/null || true
           done
           ar rcs dlls/wineios.drv/ios-app/build/libwineapp.a dlls/wineios.drv/ios-app/build/objects/app/*.o 2>/dev/null || true
-          echo "iOS App compiled"
-
-      # Step 5: Build with xcodebuild
+          echo "App done"
       - name: Build with xcodebuild
         script: |
+          set -e
           cd $APP_DIR
           cp dlls/wineios.drv/ios-app/build/libwineios.a dlls/wineios.drv/ios-app/
           cp dlls/wineios.drv/ios-app/build/libwineapp.a dlls/wineios.drv/ios-app/
-          xcodebuild -project dlls/wineios.drv/ios-app/Wine.xcodeproj \
-            -sdk iphoneos \
-            -configuration Release \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            IPHONEOS_DEPLOYMENT_TARGET=$MIN_IOS_VERSION \
-            ARCHS=arm64 \
-            2>&1 | tee dlls/wineios.drv/ios-app/build/build.log | tail -30
-
-      # Step 6: Find built app
-      - name: Find built app
-        script: |
-          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "Wine.app" -type d 2>/dev/null | head -1)
-          if [ -z "$APP_PATH" ]; then
-            echo "ERROR: Wine.app not found!"
-            exit 1
-          fi
-          echo "$APP_PATH" > /tmp/wine_app_path.txt
-          echo "Found app: $APP_PATH"
-
-      # Step 7: Create Wine prefix
-      - name: Create Wine prefix
-        script: |
-          APP_PATH=$(cat /tmp/wine_app_path.txt)
-          mkdir -p "$APP_PATH/wine/drive_c/windows/system32"
-          mkdir -p "$APP_PATH/wine/drive_c/Program Files"
-          mkdir -p "$APP_PATH/documents"
-          printf '%s\n' "[wine]" "Version=8.0" "WINE=wine" "" "[wineboot]" "HardwareAcceleration=disabled" "" "[winemac]" "UseOpenGLES=1" > "$APP_PATH/wine/config"
-          echo "Wine prefix created"
-
-      # Step 8: Create IPA
+          xcodebuild -project dlls/wineios.drv/ios-app/Wine.xcodeproj -sdk iphoneos -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO IPHONEOS_DEPLOYMENT_TARGET=$MIN_IOS_VERSION ARCHS=arm64 2>&1 | tail -20
       - name: Create IPA
         script: |
-          APP_PATH=$(cat /tmp/wine_app_path.txt)
-          BUILD_DIR=$APP_DIR/dlls/wineios.drv/ios-app/build
+          set -e
+          cd $APP_DIR
+          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "Wine.app" -type d 2>/dev/null | head -1)
+          if [ -z "$APP_PATH" ]; then echo "App not found"; exit 1; fi
+          BUILD_DIR=dlls/wineios.drv/ios-app/build
           mkdir -p $BUILD_DIR/Payload
           rm -rf $BUILD_DIR/Payload/Wine.app
           cp -R "$APP_PATH" $BUILD_DIR/Payload/
-          printf '%s\n' "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">" "<plist version=\"1.0\">" "<dict>" "<key>CFBundleDevelopmentRegion</key><string>en</string>" "<key>CFBundleDisplayName</key><string>Wine iOS</string>" "<key>CFBundleExecutable</key><string>Wine</string>" "<key>CFBundleIdentifier</key><string>com.wine.ios.app</string>" "<key>CFBundleName</key><string>Wine</string>" "<key>CFBundleShortVersionString</key><string>8.0</string>" "<key>CFBundleVersion</key><string>1</string>" "<key>MinimumOSVersion</key><string>13.0</string>" "<key>UILaunchStoryboardName</key><string>LaunchScreen</string>" "<key>UISupportedInterfaceOrientations</key>" "<array><string>UIInterfaceOrientationPortrait</string><string>UIInterfaceOrientationLandscapeLeft</string><string>UIInterfaceOrientationLandscapeRight</string></array>" "<key>UIFileSharingEnabled</key><true/>" "<key>LSSupportsOpeningDocumentsInPlace</key><true/>" "</dict>" "</plist>" > $BUILD_DIR/Payload/Wine.app/Info.plist
-          printf 'APPL????' > $BUILD_DIR/Payload/Wine.app/PkgInfo
-          rm -rf $BUILD_DIR/Payload/Wine.app/_CodeSignature
+          mkdir -p "$BUILD_DIR/Payload/Wine.app/wine/drive_c/windows/system32"
+          mkdir -p "$BUILD_DIR/Payload/Wine.app/documents"
+          printf "[wine]\nVersion=8.0\n" > "$BUILD_DIR/Payload/Wine.app/wine/config"
+          printf "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n<dict>\n<key>CFBundleExecutable</key><string>Wine</string>\n<key>CFBundleIdentifier</key><string>com.wine.ios.app</string>\n<key>CFBundleName</key><string>Wine</string>\n<key>CFBundleDisplayName</key><string>Wine iOS</string>\n<key>CFBundleShortVersionString</key><string>8.0</string>\n<key>CFBundleVersion</key><string>1</string>\n<key>MinimumOSVersion</key><string>13.0</string>\n</dict>\n</plist>\n" > "$BUILD_DIR/Payload/Wine.app/Info.plist"
+          printf "APPL????" > "$BUILD_DIR/Payload/Wine.app/PkgInfo"
+          rm -rf "$BUILD_DIR/Payload/Wine.app/_CodeSignature"
           cd $BUILD_DIR
           rm -f Wine.ipa
           zip -r Wine.ipa Payload/
           ls -la Wine.ipa
-
-      # Step 9: Verify IPA
-      - name: Verify IPA
-        script: |
-          BUILD_DIR=$APP_DIR/dlls/wineios.drv/ios-app/build
-          if [ -f "$BUILD_DIR/Wine.ipa" ]; then
-            echo "SUCCESS: IPA created ($BUILD_DIR/Wine.ipa)"
-            unzip -l $BUILD_DIR/Wine.ipa | head -10
-          else
-            echo "ERROR: IPA not created!"
-            exit 1
-          fi
-	
     artifacts:
       - dlls/wineios.drv/ios-app/build/Wine.ipa

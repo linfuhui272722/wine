@@ -1,0 +1,17 @@
+# Build artifacts
+build/
+install/
+*.o
+*.a
+*.dylib
+
+# macOS
+.DS_Store
+
+# Xcode
+*.xcuserstate
+*.xcworkspace
+xcuserdata/
+
+# Package
+package/

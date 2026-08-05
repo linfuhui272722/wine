@@ -16,6 +16,9 @@ D57C6F50E1B84F9D9D35DE6F /* WineViewController.m in Sources */ = {isa = PBXBuild
 2C1E17F0C8654E2E9D8B2390 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 600000F697F8460A90D9AF6B /* Info.plist */; };
 C7A38F4321274851B8934F4C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3AD75BB556640358AC3970E /* LaunchScreen.storyboard */; };
 C934D7B2468C46FA82E1C50D /* Wine.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 1755E86E8F54425A91D99373 /* Wine.entitlements */; };
+
+		CC000000000000000000001 /* WineMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DD000000000000000000001 /* WineMenuViewController.m */; };
+		CC000000000000000000002 /* WineMenuViewController.h in Sources */ = {isa = PBXBuildFile; fileRef = DD000000000000000000002 /* WineMenuViewController.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +38,9 @@ CF1182B4F80340E098B2AADF /* WineJIT.m */ = {isa = PBXFileReference; lastKnownFil
 D3AD75BB556640358AC3970E /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 1755E86E8F54425A91D99373 /* Wine.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Wine.entitlements; sourceTree = "<group>"; };
 BB222222CCCCDDDEEEE00 /* libwineios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwineios.a; sourceTree = "<group>"; };
+
+		DD000000000000000000001 /* WineMenuViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WineMenuViewController.m; sourceTree = "<group>"; };
+		DD000000000000000000002 /* WineMenuViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WineMenuViewController.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

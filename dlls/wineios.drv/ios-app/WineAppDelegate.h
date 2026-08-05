@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class WineViewController;
 @class WineDocumentController;
+@class WineMenuViewController;
 
 /**
  * Wine iOS Application Delegate
@@ -34,6 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** Main Wine view controller */
 @property (strong, nonatomic, nullable) WineViewController *mainWineViewController;
+
+/** Menu view controller for selecting executables */
+@property (strong, nonatomic, nullable) WineMenuViewController *menuViewController;
 
 /** Documents directory path for Wine */
 @property (copy, nonatomic, readonly) NSString *winePrefixPath;
@@ -72,6 +76,12 @@ NS_ASSUME_NONNULL_BEGIN
  * Stop the running Wine process
  */
 - (BOOL)stopWine;
+
+/**
+ * Launch a Windows executable
+ * @param path Path to the executable file
+ */
+- (void)launchExecutableAtPath:(NSString *)path;
 
 /**
  * Create a new Wine window for a given HWND

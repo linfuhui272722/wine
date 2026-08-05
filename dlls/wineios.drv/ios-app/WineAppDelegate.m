@@ -12,6 +12,7 @@
 #import "WineEventQueue.h"
 #import "WineJIT.h"
 #import "WineBridge.h"
+#import "WineMenuViewController.h"
 
 // Wine iOS headers
 #include "wineios.h"
@@ -74,21 +75,17 @@
     // Create dispatch queue for Wine operations
     self.wineDispatchQueue = dispatch_queue_create("com.wine.ios.dispatch", DISPATCH_QUEUE_SERIAL);
     
-    // Create Wine view controller as main view
-    WineViewController *wineVC = [[WineViewController alloc] initWithHwnd:1];
-    wineVC.view.backgroundColor = [UIColor blackColor];
-    
+    // Create Wine menu view controller as main view
+    WineMenuViewController *menuVC = [[WineMenuViewController alloc] init];
+    menuVC.delegate = (id<WineMenuDelegate>)self;
+    self.menuViewController = menuVC;
+
     // Create navigation controller
-    self.navigationController = [[UINavigationController alloc] initWithRootViewController:wineVC];
+    self.navigationController = [[UINavigationController alloc] initWithRootViewController:menuVC];
     self.navigationController.navigationBarHidden = YES;
-    
+
     self.window.rootViewController = self.navigationController;
     [self.window makeKeyAndVisible];
-    
-    // Store reference to main Wine view controller
-    self.mainWineViewController = wineVC;
-    
-    // Show Wine iOS info
     [self showWineiOSInfo];
     
     // Initialize Wine environment
@@ -432,6 +429,93 @@
         self.wineProcessId = 0;
         return NO;
     }
+}
+
+#pragma mark - WineMenuDelegate
+
+- (void)wineMenuDidSelectExecutableAtPath:(NSString *)path
+{
+    WINE_TRACE("Selected executable: %s\n", [path UTF8String]);
+    [self launchExecutableAtPath:path];
+}
+
+- (void)wineMenuDidRequestSettings
+{
+    WINE_TRACE("Settings requested\n");
+}
+
+- (void)launchExecutableAtPath:(NSString *)path
+{
+    if (!path || path.length == 0) {
+        WINE_ERR("Invalid executable path\n");
+        return;
+    }
+
+    WINE_TRACE("Launching executable: %s\n", [path UTF8String]);
+
+    // Check if Wine is initialized
+    if (!self.isWineInitialized) {
+        WINE_ERR("Wine not initialized\n");
+        [self setupWineEnvironment];
+    }
+
+    // Check if Wine is already running
+    if (self.wineProcessId > 0) {
+        [self stopWine];
+    }
+
+    // Check file extension
+    NSString *extension = [[path pathExtension] lowercaseString];
+    
+    if ([extension isEqualToString:@"zip"]) {
+        // Extract ZIP archive to prefix
+        [self extractZIPArchive:path];
+        
+        // Look for executable in extracted files
+        NSString *exePath = [self findExecutableInDirectory:[path stringByDeletingLastPathComponent]];
+        if (exePath) {
+            path = exePath;
+        }
+    }
+
+    // Start Wine with the executable
+    [self startWine:path];
+
+    // Transition to Wine view
+    [self transitionToWineView];
+}
+
+- (void)extractZIPArchive:(NSString *)zipPath
+{
+    WINE_TRACE("Extracting ZIP archive: %s\n", [zipPath UTF8String]);
+    // Implementation would use unzip/minizip to extract
+    // For now, just log the extraction
+}
+
+- (NSString *)findExecutableInDirectory:(NSString *)dir
+{
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSArray *contents = [fm contentsOfDirectoryAtPath:dir error:nil];
+    
+    for (NSString *file in contents) {
+        if ([[[file pathExtension] lowercaseString] isEqualToString:@"exe"]) {
+            return [dir stringByAppendingPathComponent:file];
+        }
+    }
+    return nil;
+}
+
+- (void)transitionToWineView
+{
+    // Create Wine view controller if needed
+    if (!self.mainWineViewController) {
+        self.mainWineViewController = [[WineViewController alloc] initWithHwnd:1];
+    }
+    
+    // Push Wine view controller
+    self.mainWineViewController.view.backgroundColor = [UIColor blackColor];
+    [self.navigationController pushViewController:self.mainWineViewController animated:YES];
+    self.navigationController.navigationBarHidden = NO;
 }
 
 - (void)pauseWine

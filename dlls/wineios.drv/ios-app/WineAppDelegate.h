@@ -9,20 +9,19 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import "WineMenuViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class WineViewController;
 @class WineDocumentController;
-@class WineMenuViewController;
-
 /**
  * Wine iOS Application Delegate
  * 
  * Manages the application lifecycle and coordinates between
  * the native iOS UI and the Wine Windows environment.
  */
-@interface WineAppDelegate : UIResponder <UIApplicationDelegate>
+@interface WineAppDelegate : UIResponder <UIApplicationDelegate, WineMenuDelegate>
 
 /** Main window for the application */
 @property (strong, nonatomic) UIWindow *window;

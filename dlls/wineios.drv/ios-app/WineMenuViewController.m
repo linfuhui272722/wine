@@ -12,8 +12,8 @@
 @interface WineMenuViewController () <UIDocumentPickerDelegate>
 {
     UITableView *_tableView;
-    NSArray<NSArray<NSString *> *> *_menuItems;
-    NSArray<NSString *> *_menuIcons;
+    NSArray *_menuItems;
+    NSArray *_menuIcons;
 }
 @end
 

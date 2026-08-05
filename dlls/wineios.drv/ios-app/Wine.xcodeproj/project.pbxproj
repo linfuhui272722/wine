@@ -17,6 +17,14 @@ D57C6F50E1B84F9D9D35DE6F /* WineViewController.m in Sources */ = {isa = PBXBuild
 C7A38F4321274851B8934F4C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3AD75BB556640358AC3970E /* LaunchScreen.storyboard */; };
 C934D7B2468C46FA82E1C50D /* Wine.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 1755E86E8F54425A91D99373 /* Wine.entitlements */; };
 AA111111BBBBCCCCDDDD00 /* libwineios.a in Sources */ = {isa = PBXBuildFile; fileRef = BB222222CCCCDDDEEEE00 /* libwineios.a */; };
+AA222222BBBBCCCCDDDD01 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA111111BBBBCCCCDDDD11 /* UIKit.framework */; };
+AA222222BBBBCCCCDDDD02 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA111111BBBBCCCCDDDD22 /* Metal.framework */; };
+AA222222BBBBCCCCDDDD03 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA111111BBBBCCCCDDDD33 /* QuartzCore.framework */; };
+AA222222BBBBCCCCDDDD04 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA111111BBBBCCCCDDDD44 /* OpenGLES.framework */; };
+AA222222BBBBCCCCDDDD05 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA111111BBBBCCCCDDDD55 /* Foundation.framework */; };
+AA222222BBBBCCCCDDDD06 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AA111111BBBBCCCCDDDD66 /* libz.tbd */; };
+AA222222BBBBCCCCDDDD07 /* libobjc.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AA111111BBBBCCCCDDDD77 /* libobjc.tbd */; };
+AA222222BBBBCCCCDDDD08 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AA111111BBBBCCCCDDDD88 /* libc++.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +44,14 @@ CF1182B4F80340E098B2AADF /* WineJIT.m */ = {isa = PBXFileReference; lastKnownFil
 D3AD75BB556640358AC3970E /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 1755E86E8F54425A91D99373 /* Wine.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Wine.entitlements; sourceTree = "<group>"; };
 BB222222CCCCDDDEEEE00 /* libwineios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwineios.a; sourceTree = "<group>"; };
+AA111111BBBBCCCCDDDD11 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+AA111111BBBBCCCCDDDD22 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+AA111111BBBBCCCCDDDD33 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+AA111111BBBBCCCCDDDD44 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+AA111111BBBBCCCCDDDD55 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+AA111111BBBBCCCCDDDD66 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+AA111111BBBBCCCCDDDD77 /* libobjc.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libobjc.tbd; path = usr/lib/libobjc.tbd; sourceTree = SDKROOT; };
+AA111111BBBBCCCCDDDD88 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libc++.tbd; path = usr/lib/libc++.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +59,14 @@ BB222222CCCCDDDEEEE00 /* libwineios.a */ = {isa = PBXFileReference; lastKnownFil
 	isa = PBXFrameworksBuildPhase;
 	buildActionMask = 2147483647;
 	files = (
+		AA222222BBBBCCCCDDDD01 /* UIKit.framework in Frameworks */,
+		AA222222BBBBCCCCDDDD02 /* Metal.framework in Frameworks */,
+		AA222222BBBBCCCCDDDD03 /* QuartzCore.framework in Frameworks */,
+		AA222222BBBBCCCCDDDD04 /* OpenGLES.framework in Frameworks */,
+		AA222222BBBBCCCCDDDD05 /* Foundation.framework in Frameworks */,
+		AA222222BBBBCCCCDDDD06 /* libz.tbd in Frameworks */,
+		AA222222BBBBCCCCDDDD07 /* libobjc.tbd in Frameworks */,
+		AA222222BBBBCCCCDDDD08 /* libc++.tbd in Frameworks */,
 	);
 	runOnlyForDeploymentPostprocessing = 0;
 };
@@ -83,6 +107,14 @@ E29897FCFF95454CBE388F73 /* Wine */ = {
 C6B0FA5834F64D98A0AF07B8 /* Frameworks */ = {
 	isa = PBXGroup;
 	children = (
+		AA111111BBBBCCCCDDDD11 /* UIKit.framework */,
+		AA111111BBBBCCCCDDDD22 /* Metal.framework */,
+		AA111111BBBBCCCCDDDD33 /* QuartzCore.framework */,
+		AA111111BBBBCCCCDDDD44 /* OpenGLES.framework */,
+		AA111111BBBBCCCCDDDD55 /* Foundation.framework */,
+		AA111111BBBBCCCCDDDD66 /* libz.tbd */,
+		AA111111BBBBCCCCDDDD77 /* libobjc.tbd */,
+		AA111111BBBBCCCCDDDD88 /* libc++.tbd */,
 	);
 	path = Frameworks;
 	sourceTree = "<group>";

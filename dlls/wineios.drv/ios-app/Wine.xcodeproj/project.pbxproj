@@ -17,14 +17,6 @@ D57C6F50E1B84F9D9D35DE6F /* WineViewController.m in Sources */ = {isa = PBXBuild
 C7A38F4321274851B8934F4C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3AD75BB556640358AC3970E /* LaunchScreen.storyboard */; };
 C934D7B2468C46FA82E1C50D /* Wine.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 1755E86E8F54425A91D99373 /* Wine.entitlements */; };
 AA111111BBBBCCCCDDDD00 /* libwineios.a in Sources */ = {isa = PBXBuildFile; fileRef = BB222222CCCCDDDEEEE00 /* libwineios.a */; };
-AA222222AAAA11112222333 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAAAAAAA111111AAAA222222 /* UIKit.framework */; };
-AA333333AAAA11112222333 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAAAAAAA111111AAAA333333 /* Metal.framework */; };
-AA444444AAAA11112222333 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAAAAAAA111111AAAA444444 /* QuartzCore.framework */; };
-AA555555AAAA11112222333 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAAAAAAA111111AAAA555555 /* OpenGLES.framework */; };
-AA666666AAAA11112222333 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAAAAAAA111111AAAA666666 /* Foundation.framework */; };
-AA777777AAAA11112222333 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AAAAAAAA111111AAAA777777 /* libz.tbd */; };
-AA888888AAAA11112222333 /* libobjc.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AAAAAAAA111111AAAA888888 /* libobjc.tbd */; };
-AA999999AAAA11112222333 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AAAAAAAA111111AAAA999999 /* libc++.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,308 +36,287 @@ CF1182B4F80340E098B2AADF /* WineJIT.m */ = {isa = PBXFileReference; lastKnownFil
 D3AD75BB556640358AC3970E /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 1755E86E8F54425A91D99373 /* Wine.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Wine.entitlements; sourceTree = "<group>"; };
 BB222222CCCCDDDEEEE00 /* libwineios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwineios.a; sourceTree = "<group>"; };
-AAAAAA111111AAAA222222 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-AAAAAA111111AAAA333333 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
-AAAAAA111111AAAA444444 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-AAAAAA111111AAAA555555 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
-AAAAAA111111AAAA666666 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-AAAAAA111111AAAA777777 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
-AAAAAA111111AAAA888888 /* libobjc.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libobjc.tbd; path = usr/lib/libobjc.tbd; sourceTree = SDKROOT; };
-AAAAAA111111AAAA999999 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libc++.tbd; path = usr/lib/libc++.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+2735FDA4E7E944158BD0CE93 /* Frameworks */ = {
+	isa = PBXFrameworksBuildPhase;
+	buildActionMask = 2147483647;
+	files = (
+	);
+	runOnlyForDeploymentPostprocessing = 0;
+};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 1D58A5C6784347DE90DCDB40 = {
-		isa = PBXGroup;
-		children = (
-			E29897FCFF95454CBE388F73 /* Wine */,
-			C6B0FA5834F64D98A0AF07B8 /* Frameworks */,
-			4C7CBFE985F64393B69B9DC7 /* Products */,
-		);
-		sourceTree = "<group>";
-	};
+	isa = PBXGroup;
+	children = (
+		E29897FCFF95454CBE388F73 /* Wine */,
+		C6B0FA5834F64D98A0AF07B8 /* Frameworks */,
+		4C7CBFE985F64393B69B9DC7 /* Products */,
+	);
+	sourceTree = "<group>";
+};
 E29897FCFF95454CBE388F73 /* Wine */ = {
-		isa = PBXGroup;
-		children = (
-			B56B3F813EBE4ED892520873 /* main.m */,
-			0E674B6C089B476DAEE8FB77 /* WineAppDelegate.h */,
-			9C87AE9BE7DD46B78C7F3A95 /* WineAppDelegate.m */,
-			F96BA20FFB5F464AAC2034BD /* WineViewController.h */,
-			3F048E403313441794CC8802 /* WineViewController.m */,
-			A6062D76437A48B992AA9E0B /* WineEventQueue.h */,
-			C1DCE0C987324A5784020B13 /* WineEventQueue.m */,
-			00D44B83495E4D15B4E53193 /* WineBridge.h */,
-			B0877B51D78F48D3AD7AE29F /* WineBridge.m */,
-			09CC51A5E8384F4BAB11C271 /* WineJIT.h */,
-			CF1182B4F80340E098B2AADF /* WineJIT.m */,
-			600000F697F8460A90D9AF6B /* Info.plist */,
-			1755E86E8F54425A91D99373 /* Wine.entitlements */,
-			D3AD75BB556640358AC3970E /* LaunchScreen.storyboard */,
-			BB222222CCCCDDDEEEE00 /* libwineios.a */,
-		);
-		path = "";
-		sourceTree = "<group>";
-	};
+	isa = PBXGroup;
+	children = (
+		B56B3F813EBE4ED892520873 /* main.m */,
+		0E674B6C089B476DAEE8FB77 /* WineAppDelegate.h */,
+		9C87AE9BE7DD46B78C7F3A95 /* WineAppDelegate.m */,
+		F96BA20FFB5F464AAC2034BD /* WineViewController.h */,
+		3F048E403313441794CC8802 /* WineViewController.m */,
+		A6062D76437A48B992AA9E0B /* WineEventQueue.h */,
+		C1DCE0C987324A5784020B13 /* WineEventQueue.m */,
+		00D44B83495E4D15B4E53193 /* WineBridge.h */,
+		B0877B51D78F48D3AD7AE29F /* WineBridge.m */,
+		09CC51A5E8384F4BAB11C271 /* WineJIT.h */,
+		CF1182B4F80340E098B2AADF /* WineJIT.m */,
+		600000F697F8460A90D9AF6B /* Info.plist */,
+		1755E86E8F54425A91D99373 /* Wine.entitlements */,
+		D3AD75BB556640358AC3970E /* LaunchScreen.storyboard */,
+		BB222222CCCCDDDEEEE00 /* libwineios.a */,
+	);
+	path = "";
+	sourceTree = "<group>";
+};
 C6B0FA5834F64D98A0AF07B8 /* Frameworks */ = {
-		isa = PBXGroup;
-		children = (
-			AAAAAA111111AAAA222222 /* UIKit.framework */,
-			AAAAAA111111AAAA333333 /* Metal.framework */,
-			AAAAAA111111AAAA444444 /* QuartzCore.framework */,
-			AAAAAA111111AAAA555555 /* OpenGLES.framework */,
-			AAAAAA111111AAAA666666 /* Foundation.framework */,
-			AAAAAA111111AAAA777777 /* libz.tbd */,
-			AAAAAA111111AAAA888888 /* libobjc.tbd */,
-			AAAAAA111111AAAA999999 /* libc++.tbd */,
-		);
-		path = Frameworks;
-		sourceTree = "<group>";
-	};
+	isa = PBXGroup;
+	children = (
+	);
+	path = Frameworks;
+	sourceTree = "<group>";
+};
 4C7CBFE985F64393B69B9DC7 /* Products */ = {
-		isa = PBXGroup;
-		children = (
-			19E1AE2042044BD5BC946AE4 /* Wine.app */,
-		);
-		path = "";
-		sourceTree = "<group>";
-	};
+	isa = PBXGroup;
+	children = (
+		19E1AE2042044BD5BC946AE4 /* Wine.app */,
+	);
+	path = "";
+	sourceTree = "<group>";
+};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
 866A063279C24F5B8114EF39 /* Wine */ = {
-		isa = PBXNativeTarget;
-		buildConfigurationList = 865DB5DA292E4E4EAD90996A /* Build configuration list for PBXNativeTarget "Wine" */;
-		buildPhases = (
-			84CDA842276441B6BA65D766 /* Sources */,
-			2735FDA4E7E944158BD0CE93 /* Frameworks */,
-			B0BCE0FADDD34FE3A8F773BA /* Resources */,
-		);
-		buildRules = (
-		);
-		dependencies = (
-		);
-		name = Wine;
-		productName = Wine;
-		productReference = 19E1AE2042044BD5BC946AE4 /* Wine.app */;
-		productType = "com.apple.product-type.application";
-	};
+	isa = PBXNativeTarget;
+	buildConfigurationList = 865DB5DA292E4E4EAD90996A /* Build configuration list for PBXNativeTarget "Wine" */;
+	buildPhases = (
+		84CDA842276441B6BA65D766 /* Sources */,
+		2735FDA4E7E944158BD0CE93 /* Frameworks */,
+		B0BCE0FADDD34FE3A8F773BA /* Resources */,
+	);
+	buildRules = (
+	);
+	dependencies = (
+	);
+	name = Wine;
+	productName = Wine;
+	productReference = 19E1AE2042044BD5BC946AE4 /* Wine.app */;
+	productType = "com.apple.product-type.application";
+};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 BC24407A5BE44E2A9A52E055 /* Project object */ = {
-		isa = PBXProject;
-		attributes = {
-			BuildIndependentTargetsInParallel = 1;
-			LastUpgradeCheck = 9999;
-		};
-		buildConfigurationList = 51C4CD4F22FC42209F25F83B /* Build configuration list for PBXProject "Wine" */;
-		compatibilityVersion = "Xcode 14.0";
-		developmentRegion = en;
-		hasScannedForEncodings = 0;
-		knownRegions = (
-			en,
-			Base,
-		);
-		mainGroup = 1D58A5C6784347DE90DCDB40;
-		productRefGroup = 4C7CBFE985F64393B69B9DC7;
-		projectDirPath = "";
-		projectRoot = "";
-		targets = (
-			866A063279C24F5B8114EF39 /* Wine */,
-		);
+	isa = PBXProject;
+	attributes = {
+		BuildIndependentTargetsInParallel = 1;
+		LastUpgradeCheck = 9999;
 	};
+	buildConfigurationList = 51C4CD4F22FC42209F25F83B /* Build configuration list for PBXProject "Wine" */;
+	compatibilityVersion = "Xcode 14.0";
+	developmentRegion = en;
+	hasScannedForEncodings = 0;
+	knownRegions = (
+		en,
+		Base,
+	);
+	mainGroup = 1D58A5C6784347DE90DCDB40;
+	productRefGroup = 4C7CBFE985F64393B69B9DC7;
+	projectDirPath = "";
+	projectRoot = "";
+	targets = (
+		866A063279C24F5B8114EF39 /* Wine */,
+	);
+};
 /* End PBXProject section */
-
-/* Begin PBXFrameworksBuildPhase section */
-2735FDA4E7E944158BD0CE93 /* Frameworks */ = {
-		isa = PBXFrameworksBuildPhase;
-		buildActionMask = 2147483647;
-		files = (
-			AA222222AAAA11112222333 /* UIKit.framework in Frameworks */,
-			AA333333AAAA11112222333 /* Metal.framework in Frameworks */,
-			AA444444AAAA11112222333 /* QuartzCore.framework in Frameworks */,
-			AA555555AAAA11112222333 /* OpenGLES.framework in Frameworks */,
-			AA666666AAAA11112222333 /* Foundation.framework in Frameworks */,
-			AA777777AAAA11112222333 /* libz.tbd in Frameworks */,
-			AA888888AAAA11112222333 /* libobjc.tbd in Frameworks */,
-			AA999999AAAA11112222333 /* libc++.tbd in Frameworks */,
-		);
-		runOnlyForDeploymentPostprocessing = 0;
-	};
-/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXResourcesBuildPhase section */
 B0BCE0FADDD34FE3A8F773BA /* Resources */ = {
-		isa = PBXResourcesBuildPhase;
-		buildActionMask = 2147483647;
-		files = (
-			C7A38F4321274851B8934F4C /* LaunchScreen.storyboard in Resources */,
-		);
-		runOnlyForDeploymentPostprocessing = 0;
-	};
+	isa = PBXResourcesBuildPhase;
+	buildActionMask = 2147483647;
+	files = (
+		C7A38F4321274851B8934F4C /* LaunchScreen.storyboard in Resources */,
+		2C1E17F0C8654E2E9D8B2390 /* Info.plist in Resources */,
+		C934D7B2468C46FA82E1C50D /* Wine.entitlements in Resources */,
+	);
+	runOnlyForDeploymentPostprocessing = 0;
+};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 84CDA842276441B6BA65D766 /* Sources */ = {
-		isa = PBXSourcesBuildPhase;
-		buildActionMask = 2147483647;
-		files = (
-			3700CAB3C3EA4B8B9B2FB6D0 /* WineAppDelegate.m in Sources */,
-			D57C6F50E1B84F9D9D35DE6F /* WineViewController.m in Sources */,
-			1971D8145FD246EAB8188DA9 /* WineEventQueue.m in Sources */,
-			86218C445C6F4A5EB0356043 /* WineBridge.m in Sources */,
-			5DEA934627464B7285396AF3 /* WineJIT.m in Sources */,
-			96CB6C96F0E54A65BD71DD9A /* main.m in Sources */,
-			AA111111BBBBCCCCDDDD00 /* libwineios.a in Sources */,
-		);
-		runOnlyForDeploymentPostprocessing = 0;
-	};
+	isa = PBXSourcesBuildPhase;
+	buildActionMask = 2147483647;
+	files = (
+		3700CAB3C3EA4B8B9B2FB6D0 /* WineAppDelegate.m in Sources */,
+		D57C6F50E1B84F9D9D35DE6F /* WineViewController.m in Sources */,
+		1971D8145FD246EAB8188DA9 /* WineEventQueue.m in Sources */,
+		86218C445C6F4A5EB0356043 /* WineBridge.m in Sources */,
+		5DEA934627464B7285396AF3 /* WineJIT.m in Sources */,
+		96CB6C96F0E54A65BD71DD9A /* main.m in Sources */,
+		AA111111BBBBCCCCDDDD00 /* libwineios.a in Sources */,
+	);
+	runOnlyForDeploymentPostprocessing = 0;
+};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
 DDD765BC3FD945B192AA8047 /* Debug */ = {
-		isa = XCBuildConfiguration;
-		buildSettings = {
-			ALWAYS_SEARCH_USER_PATHS = NO;
-			CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-			CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-			CLANG_ENABLE_MODULES = YES;
-			CLANG_ENABLE_OBJC_ARC = YES;
-			COPY_PHASE_STRIP = NO;
-			DEBUG_INFORMATION_FORMAT = dwarf;
-			ENABLE_STRICT_OBJC_MSGSEND = YES;
-			GCC_C_LANGUAGE_STANDARD = gnu99;
-			GCC_OPTIMIZATION_LEVEL = 0;
-			IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-			MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-			SDKROOT = iphoneos;
-			TARGETED_DEVICE_FAMILY = "1,2";
-		};
-		name = Debug;
+	isa = XCBuildConfiguration;
+	buildSettings = {
+		ALWAYS_SEARCH_USER_PATHS = NO;
+		CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+		CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+		CLANG_ENABLE_MODULES = YES;
+		CLANG_ENABLE_OBJC_ARC = YES;
+		COPY_PHASE_STRIP = NO;
+		DEBUG_INFORMATION_FORMAT = dwarf;
+		ENABLE_STRICT_OBJC_MSGSEND = YES;
+		GCC_C_LANGUAGE_STANDARD = gnu99;
+		GCC_OPTIMIZATION_LEVEL = 0;
+		IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+		MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+		SDKROOT = iphoneos;
+		TARGETED_DEVICE_FAMILY = "1,2";
 	};
+	name = Debug;
+};
 E6F5FAF6D42C43948E761391 /* Release */ = {
-		isa = XCBuildConfiguration;
-		buildSettings = {
-			ALWAYS_SEARCH_USER_PATHS = NO;
-			CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-			CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-			CLANG_ENABLE_MODULES = YES;
-			CLANG_ENABLE_OBJC_ARC = YES;
-			COPY_PHASE_STRIP = NO;
-			DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-			ENABLE_STRICT_OBJC_MSGSEND = YES;
-			GCC_C_LANGUAGE_STANDARD = gnu99;
-			IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-			SDKROOT = iphoneos;
-			TARGETED_DEVICE_FAMILY = "1,2";
-			VALIDATE_PRODUCT = YES;
-		};
-		name = Release;
+	isa = XCBuildConfiguration;
+	buildSettings = {
+		ALWAYS_SEARCH_USER_PATHS = NO;
+		CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+		CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+		CLANG_ENABLE_MODULES = YES;
+		CLANG_ENABLE_OBJC_ARC = YES;
+		COPY_PHASE_STRIP = NO;
+		DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+		ENABLE_STRICT_OBJC_MSGSEND = YES;
+		GCC_C_LANGUAGE_STANDARD = gnu99;
+		IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+		SDKROOT = iphoneos;
+		TARGETED_DEVICE_FAMILY = "1,2";
+		VALIDATE_PRODUCT = YES;
 	};
+	name = Release;
+};
 B2816EE6C00C4FE1AB2E69B9 /* Debug */ = {
-		isa = XCBuildConfiguration;
-		buildSettings = {
-			ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-			CLANG_ENABLE_MODULES = YES;
-			CODE_SIGN_ENTITLEMENTS = Wine.entitlements;
-			CODE_SIGN_IDENTITY = "-";
-			CODE_SIGN_STYLE = Automatic;
-			CURRENT_PROJECT_VERSION = 1;
-			DEVELOPMENT_TEAM = "";
-			ENABLE_BITCODE = NO;
-			HEADER_SEARCH_PATHS = (
-				"$(PROJECT_DIR)/../wineios",
-				"$(PROJECT_DIR)",
-			);
-			INFOPLIST_FILE = Info.plist;
-			INFOPLIST_KEY_CFBundleDisplayName = Wine;
-			INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-			INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-			INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-			LD_RUNPATH_SEARCH_PATHS = (
-				"$(inherited)",
-				"@executable_path/Frameworks",
-			);
-			LIBRARY_SEARCH_PATHS = (
-				"$(PROJECT_DIR)/../wineios",
-				"$(inherited)",
-			);
-			MARKETING_VERSION = 1.0;
-			OTHER_LDFLAGS = (
-				"-ObjC",
-				"-lc++",
-					"-lz",
-			);
-			PRODUCT_BUNDLE_IDENTIFIER = com.wine.ios.app;
-			PRODUCT_NAME = "$(TARGET_NAME)";
-			SWIFT_VERSION = 5.0;
-			TARGETED_DEVICE_FAMILY = "1,2";
-		};
-		name = Debug;
+	isa = XCBuildConfiguration;
+	buildSettings = {
+		ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+		CLANG_ENABLE_MODULES = YES;
+		CODE_SIGN_ENTITLEMENTS = Wine.entitlements;
+		CODE_SIGN_IDENTITY = "-";
+		CODE_SIGN_STYLE = Automatic;
+		CURRENT_PROJECT_VERSION = 1;
+		DEVELOPMENT_TEAM = "";
+		ENABLE_BITCODE = NO;
+		HEADER_SEARCH_PATHS = (
+			"$(PROJECT_DIR)/../wineios",
+			"$(PROJECT_DIR)",
+		);
+		INFOPLIST_FILE = Info.plist;
+		INFOPLIST_KEY_CFBundleDisplayName = Wine;
+		INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+		INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+		INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+		LD_RUNPATH_SEARCH_PATHS = (
+			"$(inherited)",
+			"@executable_path/Frameworks",
+		);
+		LIBRARY_SEARCH_PATHS = (
+			"$(PROJECT_DIR)/../wineios",
+			"$(inherited)",
+		);
+		MARKETING_VERSION = 1.0;
+		OTHER_LDFLAGS = (
+			"-ObjC",
+			"-lc++",
+			"-lz",
+		);
+		PRODUCT_BUNDLE_IDENTIFIER = com.wine.ios.app;
+		PRODUCT_NAME = "$(TARGET_NAME)";
+		SWIFT_VERSION = 5.0;
+		TARGETED_DEVICE_FAMILY = "1,2";
 	};
+	name = Debug;
+};
 D780CCF11A6840C4BB8AA5FC /* Release */ = {
-		isa = XCBuildConfiguration;
-		buildSettings = {
-			ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-			CLANG_ENABLE_MODULES = YES;
-			CODE_SIGN_ENTITLEMENTS = Wine.entitlements;
-			CODE_SIGN_IDENTITY = "-";
-			CODE_SIGN_STYLE = Automatic;
-			CURRENT_PROJECT_VERSION = 1;
-			DEVELOPMENT_TEAM = "";
-			ENABLE_BITCODE = NO;
-			HEADER_SEARCH_PATHS = (
-				"$(PROJECT_DIR)/../wineios",
-				"$(PROJECT_DIR)",
-			);
-			INFOPLIST_FILE = Info.plist;
-			INFOPLIST_KEY_CFBundleDisplayName = Wine;
-			INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-			INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-			INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-			LD_RUNPATH_SEARCH_PATHS = (
-				"$(inherited)",
-				"@executable_path/Frameworks",
-			);
-			LIBRARY_SEARCH_PATHS = (
-				"$(PROJECT_DIR)/../wineios",
-				"$(inherited)",
-			);
-			MARKETING_VERSION = 1.0;
-			OTHER_LDFLAGS = (
-				"-ObjC",
-				"-lc++",
-					"-lz",
-			);
-			PRODUCT_BUNDLE_IDENTIFIER = com.wine.ios.app;
-			PRODUCT_NAME = "$(TARGET_NAME)";
-			SWIFT_VERSION = 5.0;
-			TARGETED_DEVICE_FAMILY = "1,2";
-		};
-		name = Release;
+	isa = XCBuildConfiguration;
+	buildSettings = {
+		ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+		CLANG_ENABLE_MODULES = YES;
+		CODE_SIGN_ENTITLEMENTS = Wine.entitlements;
+		CODE_SIGN_IDENTITY = "-";
+		CODE_SIGN_STYLE = Automatic;
+		CURRENT_PROJECT_VERSION = 1;
+		DEVELOPMENT_TEAM = "";
+		ENABLE_BITCODE = NO;
+		HEADER_SEARCH_PATHS = (
+			"$(PROJECT_DIR)/../wineios",
+			"$(PROJECT_DIR)",
+		);
+		INFOPLIST_FILE = Info.plist;
+		INFOPLIST_KEY_CFBundleDisplayName = Wine;
+		INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+		INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+		INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+		LD_RUNPATH_SEARCH_PATHS = (
+			"$(inherited)",
+			"@executable_path/Frameworks",
+		);
+		LIBRARY_SEARCH_PATHS = (
+			"$(PROJECT_DIR)/../wineios",
+			"$(inherited)",
+		);
+		MARKETING_VERSION = 1.0;
+		OTHER_LDFLAGS = (
+			"-ObjC",
+			"-lc++",
+			"-lz",
+		);
+		PRODUCT_BUNDLE_IDENTIFIER = com.wine.ios.app;
+		PRODUCT_NAME = "$(TARGET_NAME)";
+		SWIFT_VERSION = 5.0;
+		TARGETED_DEVICE_FAMILY = "1,2";
 	};
+	name = Release;
+};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 865DB5DA292E4E4EAD90996A /* Build configuration list for PBXNativeTarget "Wine" */ = {
-		isa = XCConfigurationList;
-		buildConfigurations = (
-			B2816EE6C00C4FE1AB2E69B9 /* Debug */,
-			D780CCF11A6840C4BB8AA5FC /* Release */,
-		);
-		defaultConfigurationIsVisible = 0;
-		defaultConfigurationName = Release;
-	};
+	isa = XCConfigurationList;
+	buildConfigurations = (
+		B2816EE6C00C4FE1AB2E69B9 /* Debug */,
+		D780CCF11A6840C4BB8AA5FC /* Release */,
+	);
+	defaultConfigurationIsVisible = 0;
+	defaultConfigurationName = Release;
+};
 51C4CD4F22FC42209F25F83B /* Build configuration list for PBXProject "Wine" */ = {
-		isa = XCConfigurationList;
-		buildConfigurations = (
-			DDD765BC3FD945B192AA8047 /* Debug */,
-			E6F5FAF6D42C43948E761391 /* Release */,
-		);
-		defaultConfigurationIsVisible = 0;
-		defaultConfigurationName = Release;
-	};
+	isa = XCConfigurationList;
+	buildConfigurations = (
+		DDD765BC3FD945B192AA8047 /* Debug */,
+		E6F5FAF6D42C43948E761391 /* Release */,
+	);
+	defaultConfigurationIsVisible = 0;
+	defaultConfigurationName = Release;
+};
 /* End XCConfigurationList section */
+
 	};
 	rootObject = BC24407A5BE44E2A9A52E055 /* Project object */;
 }

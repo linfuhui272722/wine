@@ -378,24 +378,37 @@
     // Get the drawable's texture
     id<MTLTexture> texture = drawable.texture;
     
-    // Create a simple gradient texture for testing
+    // Create Wine-style surface using the graphics backend
+    // For now, create a visually interesting pattern
     MTLRegion region = MTLRegionMake2D(0, 0, (NSUInteger)texture.width, (NSUInteger)texture.height);
     
     // Allocate buffer for BGRA pixels
     NSUInteger pixelCount = texture.width * texture.height;
     NSMutableData *pixelData = [NSMutableData dataWithLength:pixelCount * 4];
     
-    // Fill with gradient (wine-themed: dark red to purple)
+    // Create animated pattern (Wine-themed)
     uint32_t *pixels = (uint32_t *)pixelData.mutableBytes;
     for (NSUInteger y = 0; y < texture.height; y++) {
         for (NSUInteger x = 0; x < texture.width; x++) {
+            // Create a gradient with Wine colors
             float t = (float)y / (float)texture.height;
-            // BGRA format
-            uint8_t r = (uint8_t)(100 + 100 * (1 - t));  // Red component
-            uint8_t g = (uint8_t)(20 + 50 * (1 - t));   // Green component
-            uint8_t b = (uint8_t)(50 + 100 * t);         // Blue component
+            float s = (float)x / (float)texture.width;
+            
+            // Wine logo colors: purple/red gradient
+            uint8_t r = (uint8_t)(128 + 100 * sin(s * 3.14159));
+            uint8_t g = (uint8_t)(20 + 30 * sin(s * 3.14159));
+            uint8_t b = (uint8_t)(80 + 80 * cos(t * 3.14159));
+            
+            // Add some noise for visual interest
+            uint8_t noise = (arc4random_uniform(20) - 10);
+            r = (r > noise) ? r - noise : 0;
+            g = (g > noise) ? g - noise : 0;
+            b = (b > noise) ? b - noise : 0;
+            
             uint8_t a = 255;
-            pixels[y * texture.width + x] = (r << 16) | (g << 8) | b | (a << 24);
+            
+            // BGRA format
+            pixels[y * texture.width + x] = (r << 16) | (g << 8) | b | ((uint32_t)a << 24);
         }
     }
     

@@ -2,6 +2,9 @@
  * Wine iOS Application Delegate Implementation
  *
  * Copyright 2024 Wine Project
+ *
+ * Main entry point for Wine iOS application.
+ * Integrates Wine components with iOS UI.
  */
 
 #import "WineAppDelegate.h"
@@ -9,6 +12,12 @@
 #import "WineEventQueue.h"
 #import "WineJIT.h"
 #import "WineBridge.h"
+
+// Wine iOS headers
+#include "wineios.h"
+#include "ios_syscalls.h"
+#include "ios_graphics.h"
+#include "ios_pe.h"
 
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -49,6 +58,9 @@
 {
     WINE_TRACE("Wine iOS application launching\n");
     
+    // Initialize Wine iOS components
+    [self initializeWineiOS];
+    
     // Create main window
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     
@@ -75,6 +87,9 @@
     // Store reference to main Wine view controller
     self.mainWineViewController = wineVC;
     
+    // Show Wine iOS info
+    [self showWineiOSInfo];
+    
     // Initialize Wine environment
     dispatch_async(self.wineDispatchQueue, ^{
         [self setupWineEnvironment];
@@ -93,6 +108,84 @@
                                                object:nil];
     
     return YES;
+}
+
+- (void)initializeWineiOS
+{
+    WINE_TRACE("Initializing Wine iOS components\n");
+    
+    // Initialize Wine iOS
+    int result = wineios_init();
+    if (result != 0) {
+        WINE_WARN("Wine iOS initialization returned %d\n", result);
+    } else {
+        WINE_TRACE("Wine iOS initialized successfully\n");
+        WINE_TRACE("Version: %s\n", wineios_get_version());
+        WINE_TRACE("Capabilities: 0x%08x\n", wineios_get_capabilities());
+        WINE_TRACE("Jailbroken: %s\n", wineios_is_jailbroken() ? "yes" : "no");
+        WINE_TRACE("JIT support: %s\n", wineios_has_jit_support() ? "yes" : "no");
+        WINE_TRACE("Wine prefix: %s\n", wineios_get_prefix());
+    }
+    
+    // Initialize Wine JIT
+    [WineJIT initializeJIT];
+}
+
+- (void)showWineiOSInfo
+{
+    // Get device info
+    UIDevice *device = [UIDevice currentDevice];
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    
+    NSString *deviceName = device.name;
+    NSString *systemVersion = device.systemVersion;
+    NSString *model = device.model;
+    NSString *deviceInfo = [NSString stringWithFormat:@"%@ (%@)", model, systemVersion];
+    
+    // Create info overlay
+    UILabel *infoLabel = [[UILabel alloc] init];
+    infoLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.7];
+    infoLabel.textColor = [UIColor whiteColor];
+    infoLabel.font = [UIFont systemFontOfSize:12];
+    infoLabel.numberOfLines = 0;
+    infoLabel.textAlignment = NSTextAlignmentLeft;
+    infoLabel.layer.cornerRadius = 8;
+    infoLabel.layer.masksToBounds = YES;
+    infoLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    // Format info text
+    NSMutableString *infoText = [NSMutableString string];
+    [infoText appendFormat:@"Wine iOS v%s\n", wineios_get_version()];
+    [infoText appendFormat:@"Device: %@\n", deviceInfo];
+    [infoText appendFormat:@"Jailbroken: %@\n", wineios_is_jailbroken() ? @"Yes" : @"No"];
+    [infoText appendFormat:@"JIT: %@\n", wineios_has_jit_support() ? @"Enabled" : @"Disabled"];
+    [infoText appendFormat:@"Prefix: %s\n", wineios_get_prefix()];
+    [infoText appendString:@"\nNote: Full Windows app execution requires"];
+    [infoText appendString:@"\ncross-compiled Wine ARM64 libraries."];
+    
+    infoLabel.text = infoText;
+    
+    // Add to main view
+    UIView *mainView = self.window.rootViewController.view;
+    [mainView addSubview:infoLabel];
+    
+    // Position in top-left with safe area
+    UILayoutGuide *safeArea = mainView.safeAreaLayoutGuide;
+    [NSLayoutConstraint activateConstraints:@[
+        [infoLabel.leadingAnchor constraintEqualToAnchor:safeArea.leadingAnchor constant:16],
+        [infoLabel.topAnchor constraintEqualToAnchor:safeArea.topAnchor constant:16],
+        [infoLabel.widthAnchor constraintLessThanOrEqualToConstant:280]
+    ]];
+    
+    // Auto-hide after 5 seconds
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [UIView animateWithDuration:0.5 animations:^{
+            infoLabel.alpha = 0;
+        } completion:^(BOOL finished) {
+            [infoLabel removeFromSuperview];
+        }];
+    });
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

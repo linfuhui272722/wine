@@ -13,7 +13,7 @@
 {
     UITableView *_tableView;
     NSArray<NSArray<NSString *> *> *_menuItems;
-    NSArray<NSString *> *> *_menuIcons;
+    NSArray<NSString *> *_menuIcons;
 }
 @end
 
@@ -178,7 +178,6 @@
     if (@available(iOS 14.0, *)) {
         NSMutableArray<UTType *> *utTypes = [NSMutableArray array];
         [utTypes addObject:UTTypeExecutable];
-        [utTypes addObject:UTTypeZIPArchive];
         [utTypes addObject:UTTypeData];
         
         UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:utTypes];
@@ -195,7 +194,7 @@
 
 - (void)openZIPPicker {
     if (@available(iOS 14.0, *)) {
-        NSArray<UTType *> *utTypes = @[UTTypeZIPArchive, UTTypeData];
+        NSArray<UTType *> *utTypes = @[UTTypeData];
         UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:utTypes];
         picker.delegate = self;
         picker.allowsMultipleSelection = NO;

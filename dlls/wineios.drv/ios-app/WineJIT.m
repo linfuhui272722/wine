@@ -16,6 +16,7 @@
 #include <mach/mach_time.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <libkern/OSCacheControl.h>
 
 // Wine debug channel (stubbed for iOS standalone)
 #define WINE_TRACE(...) do {} while(0)
@@ -248,8 +249,8 @@ static int jit_munmap(void *ptr, size_t size)
 
 + (void)flushInstructionCache:(void *)address size:(size_t)size
 {
-    // ARM64 cache flush
-    __builtin___clear_cache(address, (char *)address + size);
+    // iOS ARM64 cache flush using libkern
+    sys_icache_invalidate(address, size);
 }
 
 + (void)registerJITCode:(void *)address size:(size_t)size name:(nullable const char *)name

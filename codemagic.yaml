@@ -27,7 +27,6 @@ workflows:
           set -e
           cd $APP_DIR/dlls/wineios.drv/ios-app
           ls -la Wine.xcodeproj/
-          xcodebuild -project Wine.xcodeproj -list
       - name: Setup
         script: |
           set -e
@@ -35,19 +34,29 @@ workflows:
           rm -rf dlls/wineios.drv/ios-app/build
           mkdir -p dlls/wineios.drv/ios-app/build
           rm -rf ~/Library/Developer/Xcode/DerivedData/Wine-*
-      - name: Clean old static libs
+      - name: Compile wineios on macOS
         script: |
           set -e
           cd $APP_DIR
-          rm -f dlls/wineios.drv/ios-app/libwineios.a
-          rm -f dlls/wineios.drv/ios-app/libwineapp.a
-          rm -f dlls/wineios.drv/ios-app/*.a
+          SDK=$(xcrun --sdk iphoneos --show-sdk-path)
+          mkdir -p dlls/wineios.drv/ios-app/build/wineios
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fPIC -c dlls/wineios.drv/wineios/wineios.c -o dlls/wineios.drv/ios-app/build/wineios/wineios.o 2>&1 | grep -v warning || true
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fPIC -c dlls/wineios.drv/wineios/ios_syscalls.c -o dlls/wineios.drv/ios-app/build/wineios/ios_syscalls.o 2>&1 | grep -v warning || true
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fPIC -c dlls/wineios.drv/wineios/ios_graphics.c -o dlls/wineios.drv/ios-app/build/wineios/ios_graphics.o 2>&1 | grep -v warning || true
+          clang -target arm64-apple-ios -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS_VERSION -fPIC -c dlls/wineios.drv/wineios/ios_pe.c -o dlls/wineios.drv/ios-app/build/wineios/ios_pe.o 2>&1 | grep -v warning || true
+          ar rcs dlls/wineios.drv/ios-app/build/wineios/libwineios.a dlls/wineios.drv/ios-app/build/wineios/*.o
+          ls -la dlls/wineios.drv/ios-app/build/wineios/
+      - name: Copy wineios lib
+        script: |
+          set -e
+          cd $APP_DIR
+          cp dlls/wineios.drv/ios-app/build/wineios/libwineios.a dlls/wineios.drv/ios-app/
       - name: Build with xcodebuild
         script: |
           set -e
           cd $APP_DIR/dlls/wineios.drv/ios-app
           xcodebuild -project Wine.xcodeproj -scheme Wine -sdk iphoneos -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO IPHONEOS_DEPLOYMENT_TARGET=$MIN_IOS_VERSION ARCHS=arm64 2>&1 | tee build.log
-          tail -50 build.log
+          tail -30 build.log
           if grep -q "BUILD SUCCEEDED" build.log; then
             echo "BUILD SUCCEEDED"
           else
